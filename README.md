@@ -11,6 +11,16 @@ current_working_build/dot_matrix_printer_network_simb0.0.17.py
 This project started as a practical terminal printer receiver and grew into a small hardware-style simulator. It is meant to feel like an old continuous-feed printer sitting on the network, with the main menu staying available while print jobs open in their own console window.
 
 
+Development Methodology & Approach
+
+The Python code in this repository was primarily generated using Codex. 
+While I do not specialize in writing Python syntax, I used my background in programming and debugging to test, troubleshoot, and refine the AI's output into a fully functional release.
+
+**Project Status**
+This Dot Matrix Printer Emulator should run right out of the box. While a few features might still need some polish and aren't 100% perfect yet, the core program is simple and ready to go.
+
+I've personally debugged and cleaned up the files to make sure there's no "AI code slop" or weird generated clutter left behind. That said, if you do happen to spot any messy code or catch a bug I missed, just let me know or open an issue!
+
 ## Current Status
 
 - Current version: `b0.0.17`
@@ -79,10 +89,16 @@ Example from a Linux/Debian machine:
 cat file.txt | nc WINDOWS_IP_ADDRESS 9999
 ```
 
+OR
+
+```bash
+nc WINDOWS_IP_ADDRESS < ~/path/to/file.txt
+```
+
 
 ## Useful Commands
 
-Inside the emulator, command mode is entered from the main menu by pressing `:`.
+Inside the emulator, command mode is entered from the main menu by pressing `:` (Shift + Semicolon).
 
 Common typed commands:
 
