@@ -1,2 +1,323 @@
-# Dot-Matrix-Printer-Emulator
-Files for Dot Matrix Printer Emulator: A Python-based simulation of a dot matrix printer, Specifically with a 9 IBM sound, Add a 24 pin Panasonic sound
+# Dot Matrix Printer Network Emulator
+
+A Windows terminal-based dot matrix printer emulator that accepts print jobs over the network, renders them as scrolling tractor-feed paper, and simulates vintage printer behavior with line feeds, paper jams, ribbon wear, audio, and multiple print head profiles.
+
+The current working build is:
+
+```text
+current_working_build/dot_matrix_printer_network_simb0.0.17.py
+```
+
+This project started as a practical terminal printer receiver and grew into a small hardware-style simulator. It is meant to feel like an old continuous-feed printer sitting on the network, with the main menu staying available while print jobs open in their own console window.
+
+
+## Current Status
+
+- Current version: `b0.0.17`
+- Active source file: `current_working_build/dot_matrix_printer_network_simb0.0.17.py`
+- Network listener: `0.0.0.0:9999`
+- Latest validation: `25/25` smoke test pass
+- Main platform: Windows / PowerShell
+- Print source: network socket, local demo job, or spool reprint
+
+
+## Main Features
+
+- Listens for incoming print jobs over TCP port `9999`.
+- Opens print jobs in separate terminal windows while the main menu stays available.
+- Renders text on simulated tractor-feed paper.
+- Supports continuous paper, page counting, line feeds, and top-of-form behavior.
+- Tracks a virtual paper stack and resets after the stack capacity is reached.
+- Supports IBM 9-pin and Panasonic 24-pin print head profiles.
+- Includes draft and near-letter-quality style print modes.
+- Simulates ribbon wear, ribbon replacement, paper jams, and recovery commands.
+- Supports text payloads and image-to-ASCII conversion for image payloads.
+- Keeps spool history for reprinting recent jobs.
+- Saves settings to a `.sep` file.
+- Includes multiple log files for build history, releases, patches, and debugging.
+
+
+## Requirements
+
+The emulator is mostly standard-library Python, with optional packages for enhanced behavior.
+
+Recommended:
+
+```text
+Python 3.10+
+pygame
+Pillow
+```
+
+Notes:
+
+- `pygame` is used for better audio playback.
+- `Pillow` is used for image-to-ASCII conversion.
+- The script still has fallback behavior if optional pieces are missing, but the full experience is better with them installed.
+
+
+## Running The Emulator
+
+From PowerShell:
+
+```powershell
+cd L:\DOTMATRIXPRINTEMULATOR\current_working_build
+python .\dot_matrix_printer_network_simb0.0.17.py
+```
+
+The server binds to:
+
+```text
+0.0.0.0:9999
+```
+
+That means it listens on all local network interfaces. Another machine on the same network can send text to the emulator if the Windows firewall and local IP address allow it.
+
+Example from a Linux/Debian machine:
+
+```bash
+cat file.txt | nc WINDOWS_IP_ADDRESS 9999
+```
+
+
+## Useful Commands
+
+Inside the emulator, command mode is entered from the main menu by pressing `:`.
+
+Common typed commands:
+
+```text
+--replace-ribbon
+--clear-jam
+```
+
+Command behavior:
+
+- `--replace-ribbon` restores ribbon health to `100%`.
+- `--clear-jam` clears a simulated paper jam and resumes printing.
+
+The main menu also has keyboard shortcuts for changing printer settings. The print job window is intended to ignore most shortcuts so accidental keypresses do not change global settings while a job is printing.
+
+
+## Printer Profiles
+
+### IBM 9-pin
+
+The IBM 9-pin profile is intentionally uneven and mechanical-feeling. It keeps a more obvious cold-start and timing jitter behavior to mimic a rougher vintage impact printer feel.
+
+Current timing targets:
+
+- Draft mode: about `0.005` seconds per character
+- NLQ mode: about `0.020` seconds per character
+- Newline/carriage return pause: `0.20` seconds
+
+### Panasonic 24-pin
+
+The Panasonic 24-pin profile is smoother after startup. It keeps startup warm-up behavior for the first few lines, then switches to a stable timing grid.
+
+Current timing targets:
+
+- Draft mode: `0.0052` seconds per character
+- LQ/NLQ mode: `0.0160` seconds per character
+- Newline/carriage return pause: `0.20` seconds
+
+
+## Ribbon Wear
+
+The emulator tracks a virtual ribbon life counter. When ribbon wear is enabled, print output slowly degrades as the ribbon wears down.
+
+Behavior:
+
+- Fresh ribbon prints cleanly.
+- Low ribbon health causes visible fading/degradation.
+- At depletion, the emulator can pause printing until the ribbon is replaced.
+- Clean mode disables ribbon wear and locks ribbon health at `100%`.
+
+To replace the ribbon:
+
+```text
+: --replace-ribbon
+```
+
+
+## Paper Jams
+
+The emulator includes simulated paper jam behavior. A jam can pause output and require user action from the main menu.
+
+To clear a jam:
+
+```text
+: --clear-jam
+```
+
+The goal is not just to print text, but to make the emulator behave more like a physical dot matrix printer with mechanical state.
+
+
+## Project Layout
+
+```text
+DOTMATRIXPRINTEMULATOR/
+  README.md
+  current_working_build/
+    dot_matrix_printer_network_simb0.0.17.py
+    extra/
+    spool/
+    DEBUG/
+    build_out/
+    tools/
+  old/
+```
+
+Important folders:
+
+- `current_working_build/` contains the active source and runtime folders.
+- `current_working_build/extra/` contains audio files, notes, settings, and generated audio asset folders.
+- `current_working_build/spool/` contains runtime print-job history.
+- `current_working_build/DEBUG/` contains debug notes, harness files, and smoke-test logs.
+- `current_working_build/build_out/` contains build artifacts from EXE packaging attempts.
+- `current_working_build/tools/` contains bundled helper tools such as FFmpeg files.
+- `old/` contains archived older versions and backup builds.
+
+
+## Log Files
+
+This project has several different kinds of log and notes files. They are not all the same thing.
+
+### Update Log
+
+```text
+current_working_build/extra/UPDATE_LOG.txt
+```
+
+This is the broad historical development log. It tracks larger version changes, feature additions, and major behavior changes.
+
+### Release Notes
+
+```text
+current_working_build/extra/RELEASE_NOTES.txt
+```
+
+This is a more release-style summary. It is meant to describe what changed in named versions or milestone builds.
+
+### Patch Notes
+
+```text
+current_working_build/extra/PATCH_NOTES.txt
+```
+
+This tracks smaller fixes and hot patches. It is useful for minor behavioral fixes that may not deserve a full release note.
+
+### Debug Logs
+
+```text
+current_working_build/DEBUG/
+```
+
+The debug folder contains test notes, harness output, and historical smoke-test results. These files are useful for development, but they do not need to be bundled with every public release.
+
+
+## What To Upload To GitHub
+
+For a clean source repository, upload the important source and small documentation files first.
+
+Recommended:
+
+```text
+README.md
+current_working_build/dot_matrix_printer_network_simb0.0.17.py
+current_working_build/extra/UPDATE_LOG.txt
+current_working_build/extra/RELEASE_NOTES.txt
+current_working_build/extra/PATCH_NOTES.txt
+```
+
+Optional:
+
+```text
+current_working_build/DEBUG/
+current_working_build/extra/*.wav
+```
+
+Only upload WAV files if you have the right to share them and you actually want them in the repository.
+
+
+## What To Ignore
+
+The project contains a lot of generated files. Some generated audio folders are several gigabytes and should not be uploaded to GitHub.
+
+Recommended `.gitignore` entries:
+
+```gitignore
+old/
+__pycache__/
+.codex/
+
+current_working_build/__pycache__/
+current_working_build/.venv/
+current_working_build/build_out/
+current_working_build/spool/
+current_working_build/tmp_sound_extract/
+current_working_build/dot_matrix_source_pack.zip
+
+current_working_build/extra/assets/
+current_working_build/extra/__print_variants/
+current_working_build/extra/__linefeed_variants/
+current_working_build/extra/dot_matrix_printer_settings.sep
+```
+
+Why these should be ignored:
+
+- `old/` is local version history, not source code history.
+- `spool/` is runtime print history.
+- `.venv/` is a local Python environment.
+- `build_out/` is generated build output.
+- `__pycache__/` is Python cache data.
+- `extra/assets/`, `extra/__print_variants/`, and `extra/__linefeed_variants/` are generated audio caches and can become extremely large.
+- `dot_matrix_printer_settings.sep` is local machine state.
+
+
+## Versioning Habit
+
+The development workflow for this project has been intentionally conservative:
+
+1. Copy the current working file.
+2. Edit the new copy.
+3. Archive the previous version into `old/`.
+4. Run compile checks or smoke tests.
+5. Update logs when requested.
+
+This makes it easier to roll back when a timing/audio/network change breaks something.
+
+
+## Current Validation
+
+The latest active build, `b0.0.17`, passed a 25-point smoke test.
+
+Covered areas included:
+
+- Python compile/syntax
+- CLI argument parsing
+- settings save/load
+- ribbon wear and clean override
+- replace-ribbon command path
+- clear-jam command path
+- dynamic paper width
+- text formatting
+- socket payload classification
+- spool trimming
+- small print simulation
+- bounded receiver queue behavior
+- payload size cap
+
+Result:
+
+```text
+25/25 PASS
+0 FAIL
+0 HANG
+```
+
+
+## Notes
+
+This emulator is intentionally weird in the good way. It is not just a printer receiver. It is a terminal-based simulation of an old dot matrix printer, including some mechanical personality: cold starts, print head profiles, line feeds, ribbon wear, and jam recovery.
+
