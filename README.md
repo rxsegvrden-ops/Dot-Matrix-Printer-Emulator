@@ -2,6 +2,8 @@
 
 A Windows terminal-based dot matrix printer emulator that accepts print jobs over the network, renders them as scrolling tractor-feed paper, and simulates vintage printer behavior with line feeds, paper jams, ribbon wear, audio, and multiple print head profiles.
 
+# ANOTHER LINE FOR CHECKING
+
 The current working build is:
 
 ```text
