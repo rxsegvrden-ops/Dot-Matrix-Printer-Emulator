@@ -1,0 +1,261 @@
+Dot Matrix Printer Emulator
+Patch Notes (Targeted Fixes / Hotfix Track)
+
+Purpose
+- This file tracks smaller fixes and behavior corrections.
+- Release Notes remain feature-focused.
+- Update Log remains chronological for broader development history.
+
+Current Build
+- dot_matrix_printer_network_simv49.py
+
+v49 (Hotfixes)
+- Added simple command listener in main menu:
+  - press `:` to enter command mode,
+  - type `--replace-ribbon` and press Enter.
+- `--replace-ribbon` now resets ribbon life to 100% and sets ribbon chars-used to `0`.
+- Command-driven ribbon reset persists to settings on disk via existing save path.
+- Confirmed settings file write on print job close path (worker job updates persisted state and job-end save behavior verified).
+- Added on-screen command-mode prompt and command buffer visibility in dashboard.
+- Validation: compile PASS and command-path persistence test PASS (`chars=0`, `health=1.00000000` after reload).
+- Extra heavy debug pass on v49 (no code edits in this pass):
+  - built-in `--self-test` PASS,
+  - 65/66-line page-boundary invariants PASS,
+  - replace-ribbon command persistence PASS,
+  - worker print-job close/settings mtime + ribbon persistence PASS,
+  - receiver burst bounded-window behavior PASS,
+  - payload cap enforcement PASS,
+  - spool trim bounded-at-50 PASS.
+
+v48 (Hotfixes)
+- Softened line-feed sound in the simplest path:
+  - paper feed now prefers `extra/dot_matrix_paper_feed_quiet.wav` directly when present,
+  - fallback feed variant path remains available if quiet asset is missing.
+- Added hard bounded network payload cap per incoming job:
+  - `MAX_INCOMING_JOB_BYTES = 2 * 1024 * 1024` (2MB),
+  - receiver now truncates oversized payloads at cap to prevent unbounded memory growth.
+- Kept bounded queue behavior (`drop oldest, keep newest`) under saturation.
+- Validation:
+  - `py_compile` PASS,
+  - built-in `--self-test` PASS,
+  - custom receiver burst/concurrency tests PASS,
+  - end-to-end soak (12s sustained, 4 senders): 415/415 processed, 0 send errors, max payload seen exactly 2MB cap, spool cap respected.
+
+v47 (Hotfixes)
+- Fixed paper-stack counter math so stack advances only on physical page boundaries.
+- Stack count now increments only when:
+  - 66 lines are reached (`STANDARD_PAGE_LINES`),
+  - form feed is processed (`\f`),
+  - top-of-form macro (`T`) is applied.
+- Corrected print-line physical row mapping to use page line position instead of stack page index.
+- Updated manual feed/form-feed paths to avoid false stack-page increments from per-line feed animation.
+- Validation: `py_compile` PASS; focused smoke checks confirmed:
+  - 33 lines -> stack remains `0/36`,
+  - 66 lines -> stack advances to `1/36`,
+  - form feed -> stack advances by one page.
+
+v46 (Hotfixes)
+- Reverted print-head audio path away from robotic micro-grain slicing back to a cleaner baseline source flow.
+- Added lightweight pygame playback for print ticks with tiny randomized speed/pitch (0.95x-1.05x) and volume drift (90%-100%) per hit.
+- Added one-time print-source trim cache (3s lead-in removed) so head-strike sound starts faster without heavy DSP.
+- v46 addendum: reduced print-source trim lead from 3.0s to 1.8s for a quicker but still natural strike onset.
+- Kept line-feed playback behavior stable (full feed playback path unchanged) while preserving existing profile/head-source mapping.
+- Validation: `python -m py_compile dot_matrix_printer_network_simv46.py`, `python dot_matrix_printer_network_simv46.py --self-test` (PASS), worker-mode smoke print (`--print-job`) completed cleanly.
+
+v44 (Rollback)
+- Reverted v43 print-line audio changes due to robotic output character.
+- Restored pre-v43 print-line sound behavior by promoting the prior v42 code path as the active build.
+
+v43 (Hotfixes)
+- Forced print-strike source resolution to the original `dot_matrix_sound.wav` chain.
+- Added fixed ~3000ms print-source trim baseline before random strike offsets are applied.
+- Increased per-strike speed windows and strike durations for faster but still substantial hit playback.
+- Increased generated strike pool count to reduce repetitive sounding hit reuse.
+- Adjusted QUIET gain window upward to keep clarity and reduce “muffled” profile character.
+- Additional heavy smoke validation pass completed:
+  - `py_compile` PASS
+  - built-in `--self-test` PASS
+  - form-feed and page-counter invariants PASS
+  - print-variant pool breadth/uniqueness checks PASS
+  - threaded network receiver stress burst test PASS
+  - ribbon/settings persistence roundtrip stress PASS
+
+v42 (Hotfixes)
+- Removed static print-loop WAV playback path for `print` and switched to per-strike one-shot playback.
+- Added cached print-strike variant generation in `extra\\__print_variants`.
+- Added attack-trim logic to skip leading low-energy noise before strike extraction.
+- Added discrete IBM9/PAN24 strike pools with different duration/speed ranges to create clearly separate head voices.
+- Changed QUIET profile behavior from alternate muffled file preference to dynamic lower-gain strike generation.
+
+v41 (Hotfixes)
+- Added dynamic line-feed WAV variation with random speed/pitch factor (`0.95`-`1.05`) per line feed event.
+- Added random micro pause (`1ms`-`15ms`) immediately before line-feed audio trigger.
+- Added per-line feed volume drift (`90%`-`100%`) to emulate mechanical housing vibration.
+- Added cached generated feed variants in `extra\\__linefeed_variants` to avoid runtime lag from repeated transforms.
+- Replaced unavailable `audioop` dependency with pure-stdlib WAV amplitude transform for Python 3.14 compatibility.
+
+v40 (Validation Only)
+- `py_compile` pass for `dot_matrix_printer_network_simv40.py`.
+- Built-in `--self-test` pass:
+  - Settings roundtrip
+  - Sound profile assets
+  - Spool history load
+  - Live settings sync
+  - Render smoke test
+- Extended validation suite pass:
+  - Form-feed parsing check (`\\f` preservation)
+  - Page counter check (66-line rollover + forced form feed)
+  - Threaded network buffer stress check (5 x 1MB payloads)
+  - Ribbon replace persistence roundtrip check
+
+v39 (Hotfixes)
+- Rolled back sound engine from v37/v38 experimental layering to older v32-style file resolution/playback behavior.
+- Removed runtime randomized print-variant clack path and PAN24 print-bed loop path.
+- Restored active core WAVs from backup set (`*.bak_tinny`) for print, paper feed, and carriage return.
+- Fixed plain-text form-feed parsing path so `\\f` markers are preserved and page-break logic can trigger correctly.
+
+v38 (Hotfixes)
+- Added profile-aware use of user-provided real WAV assets:
+  - PAN24 print bed uses `24pin_dotmatrixprinter.wav`.
+  - IBM9 print ticks randomize over `nadeldrucker*.wav` sources.
+- Added randomized print tick playback cache/timing guard to reduce repetitive clack loops.
+- Added threaded `receiver_loop` and bounded network queue for large incoming payload buffering.
+- Added queue overflow handling to preserve responsiveness under burst traffic.
+- Fixed main-menu color reset/flicker during live settings sync by only reapplying console theme when `paper_theme` actually changes.
+- Fixed remaining GREENBAR/CLASSIC theme bouncing in main menu by disabling theme-field sync from worker-written live settings updates in the main loop.
+
+v37 (Hotfixes)
+- Added new IBM9/PAN24 profile WAV assets for print head, carriage return, and paper feed.
+- Added loud-profile aliases for profile-specific assets to reduce fallback ambiguity.
+- Kept existing code paths stable while improving audible profile separation.
+
+v36 (Hotfixes)
+- Added worker-process tracking so main `Q` now waits for print windows to exit before closing the main menu.
+- Added persisted `page_count` and `page_line_count` with standard 66-line page logic.
+- Added form-feed (`\\f`) detection path to trigger page breaks without false per-line page increments.
+- Updated dashboard layout wording for improved readability and reduced ambiguity.
+- Updated sound resolution rules so paper/carriage/head profiles prefer profile-aware behavior over generic base WAV fallback.
+
+v35 (Hotfixes)
+- Added persisted `head_profile` setting with cross-window live sync.
+- Added `V` control path and startup-config support for IBM9/PAN24 sound personality switching.
+- Added profile-aware sound resolution and synthesized fallback feed/carriage/head behavior.
+
+v34 (Hotfixes)
+- Added persistent `ribbon_health` and `ribbon_chars_used` settings state.
+- Added `--replace-ribbon` command-line maintenance action.
+- Added ribbon-wear-aware character aging path to gradually fade print density.
+
+v33 (Hotfixes)
+- Added persisted jam state (`paper_jam_active`, reason, trigger line) in settings for cross-window sync.
+- Added command buffer handling for `--clear-jam` (Enter to submit) while jammed.
+- Added flashing jam alert rows and typed-command preview in the main dashboard.
+- Added jam wait loop with grinding sound channel and resume path only after clear command.
+
+v32 (Hotfixes)
+- Fixed stack rollover edge case where manual feed only reset on the next feed call.
+- Stack usage now increments from real rendered lines and saves to `.sep` for main-window visibility.
+- Added main-loop settings polling so worker updates (including stack count) surface in the dashboard.
+
+v31 (Hotfixes)
+- Added controlled print-head impact jitter in the render loop for less robotic timing.
+- Added mild stochastic line-settle delay for carriage/feed transitions.
+- Added occasional mid-feed cadence hitch in `REALISTIC` feed mode for a heavier mechanical feel.
+
+v30 (Hotfixes)
+- Promoted stable build with all v29 behavior and smoke-verified runtime paths.
+
+v29 (Hotfixes)
+- Promoted build containing spool auto-trim (50-file cap) behavior.
+
+v28 (Hotfixes)
+- Worker terminals now hide dashboard/menu and show print output only.
+- Added `X` key demo page queue path to make offline/showcase testing easier.
+
+v27 (Hotfixes)
+- Added shared hard-exit worker signal so main-window `Q` closes active print worker terminals immediately.
+- Worker live-sync loop now checks hard-exit and terminates process on receipt.
+- Startup now clears stale stop/hard-exit flags from prior sessions.
+
+v26 (Hotfixes)
+- Main-window `Q` now signals worker windows to stop active print jobs before exit.
+- Added shared `stop_all_jobs` state persistence to support cross-window stop behavior.
+- Startup now clears stale `stop_all_jobs` to prevent unintended cancel on next launch.
+- Hardened WAV playback calls with safer runtime handling.
+
+v25 (Hotfixes)
+- Added startup self-test summary line during startup wait.
+- Refactored self-test internals into reusable collection functions.
+- Kept full `--self-test` mode for detailed pass/fail diagnostics.
+
+v24 (Hotfixes)
+- Added forced redraw path so menu option changes show immediately.
+- Fixed delayed visual update issue for `H/J` history selection under paper-preserve mode.
+
+v23 (Hotfixes)
+- Added persistent sound profile toggle (`K`) and live sync to worker windows.
+- Added loud/quiet profile asset resolution with fallback ordering.
+
+v22 (Hotfixes)
+- Added `U` key to refresh main menu state from settings file.
+- Corrected extra blank-line feed advance per printed newline.
+
+v21 (Hotfixes)
+- Replaced non-ASCII minus symbol in menu text to avoid Windows cp1252 rendering errors.
+
+v20 (Hotfixes)
+- Live settings sync switched to high-resolution timestamp checks.
+- Added missing pause propagation to worker windows.
+- Increased automatic feed sound trigger timing for audibility.
+
+Maintenance Rule
+- Continue adding small fixes here per version as they happen.
+
+b0.0.1 Hotfixes 1-6 (Consolidated)
+- Hotfix 1: stream/image route stabilization.
+- Hotfix 2: strict 9% degradation activation floor + full replace-ribbon reset behavior.
+- Hotfix 3: removed phantom spaces/jitter above threshold.
+- Hotfix 4: post-job print window persistence until manual `Q`.
+- Hotfix 5: stronger low-health fade profile with fixed-width safety.
+- Hotfix 6: line-feed gain reduction only; strike path untouched.
+
+b0.0.15 Hotfix Line
+- b0.0.15:
+  - strike truncation feel restored while preserving structured asset router model.
+  - PAN24 startup/switch prewarm cache path hardened.
+- b0.0.15_hotfix1:
+  - IBM9 NLQ double-pass timing/audio integrated.
+  - hash-render regression removed; actual text retained.
+- b0.0.15_hotfix2:
+  - IBM9 DRAFT lighter text path and NLQ second-pass heavier styling added.
+  - IBM9 NLQ ribbon health wear increased slightly versus non-NLQ modes.
+
+b0.0.165 Hotfix Notes
+- Warmup window timing adjusted:
+  - starts at line 1,
+  - random end line chosen per new print window between lines 12 and 17.
+- Startup warmup taper refined:
+  - from line 6 onward, stutter/pause artifacts reduce as line count rises.
+- Paper jam behavior updated:
+  - jam chance per 100-line check raised from 1% to 5%.
+  - jam alert text now clearly instructs menu-window clear command usage.
+
+0.0.169 Base Notes
+- IBM9 timing path now uses fixed baseline delays scaled by `speed_scale`:
+  - DRAFT baseline `0.005`
+  - NLQ baseline `0.020`
+- Mechanical impact sleep path was normalized so both IBM9 and PAN24 use the same baseline jitter/stutter model.
+- Added short IBM9-only post-line carriage settle pause (`~0.20s`) before carriage return playback.
+
+b0.0.169 Hotfix Notes (Recorded Chain)
+- `b0.0.169_hotfix1`:
+  - initial 0.0.169 timing baseline promoted for IBM9 speed-controlled impact pacing.
+- `b0.0.169_hotfix2`:
+  - retained micro-jitter outside startup warmup so long jobs keep mechanical cadence variance.
+- `b0.0.169_hotfix3`:
+  - warmup envelope reshaped to repeat on an 11-line phase cycle across full-job playback.
+- `b0.0.169_hotfix5`:
+  - split cadence behavior by head profile:
+    - PAN24: startup warmup preserved only for early lines, then fixed steady cadence.
+    - IBM9: rolling warmup-style envelope/jitter preserved across entire job.
+  - added PAN24 head-specific baseline timing constants and aligned carriage settle pacing for both head profiles.

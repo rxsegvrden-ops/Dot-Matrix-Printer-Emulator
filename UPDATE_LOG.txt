@@ -1,0 +1,615 @@
+Dot Matrix Printer Emulator - Update Log
+
+Current active build:
+- dot_matrix_printer_network_simv48.py
+
+v48
+- Reduced harshness of line-feed audio by preferring `dot_matrix_paper_feed_quiet.wav` for paper-feed playback.
+- Added hard per-job network payload bound (`2MB`) in receiver intake path to prevent oversized message memory growth.
+- Receiver now truncates payload at cap while preserving queue flow.
+- Verified bounded behavior and stability with:
+  - compile + built-in self-test pass,
+  - receiver burst/concurrency stress tests,
+  - sustained soak (415 jobs accepted/processed, zero sender errors, max payload observed at exact 2MB cap),
+  - spool directory remained bounded during soak ingestion.
+
+v47
+- Promoted page/stack counter fix so stack pages no longer advance per printed line.
+- Stack progression is now tied only to physical page boundaries:
+  - standard 66-line page rollovers,
+  - explicit form-feed control characters (`\f`),
+  - manual top-of-form (`T`) macro.
+- Corrected rendered physical line mapping to follow in-page line position rather than stack-page index.
+- Adjusted manual feed and form-feed paths to preserve visual feed animation without corrupting stack-page count.
+- Verified with targeted smoke checks (33-line, 66-line, and form-feed cases) plus compile pass.
+
+v43
+- Switched print-strike source back to original `dot_matrix_sound.wav` for both head profiles.
+- Added baseline source trim (~3s) before strike extraction to remove noisy lead-in.
+- Tuned strike speed/duration and pool generation for faster, less static print-line sound behavior.
+- Rebalanced QUIET dynamics to avoid muffled tone while preserving lower output intensity.
+
+v42
+- Reworked main print-head audio engine to remove static loop startup noise and trigger immediate strike playback.
+- Added two clearly separate head voices by profile (`IBM9` vs `PAN24`) with independent strike-shaping ranges.
+- Added strike extraction with leading-noise trim, short-hit slicing, speed variation, and gain variation.
+- Reworked QUIET profile to use reduced dynamic gain rather than muffled alternate source preference.
+
+v41
+- Added randomized line-feed audio variation per line:
+  - speed/pitch shift (`0.95` to `1.05`)
+  - trigger micro-delay (`1ms` to `15ms`)
+  - gain drift (`90%` to `100%`)
+- Added cached generated feed-variant WAVs to reduce static sound while preserving responsiveness.
+- Implemented Python 3.14-safe WAV transform path without `audioop`.
+
+v39
+- Reverted all recent sound-engine changes and restored older v32-style audio behavior.
+- Removed runtime randomized clack layering and profile-bed loop behavior.
+- Restored core active WAV assets (print/paper/carriage) from prior backup files.
+
+v38
+- Added real WAV profile mapping with user-provided recordings:
+  - PAN24 -> `24pin_dotmatrixprinter.wav`
+  - IBM9 -> `256900/256899/256898/256897 nadeldrucker` variants
+- Added randomized clack selection to avoid repetitive identical virtual print sound loops.
+- Kept synchronized line-feed playback behavior so feed sounds complete when triggered.
+- Added threaded socket intake buffer with bounded queue to improve resilience for large/bursty network print jobs.
+
+v37
+- Replaced core sound assets with a new chunkier terminal-focused sound pack.
+- Added dedicated IBM9 and PAN24 WAV files for print, paper feed, and carriage return.
+- Added profile-specific loud aliases and validated profile resolution + self-test pass.
+
+v36
+- Fixed main-menu `Q` shutdown sequencing so active print windows are stopped first and main exits only after workers close.
+- Replaced broken per-line page behavior with true page tracking (66-line pages + form-feed + top-of-form macro).
+- Added persistent page telemetry fields and clearer dashboard page/line display.
+- Improved audio profile reliability so IBM9/PAN24 voicing remains distinct even with generic base WAV assets present.
+
+v35
+- Added dual print-head audio personas: `IBM9` (loud metallic 9-pin impact) and `PAN24` (higher-pitch 24-pin whirr).
+- Added persisted head-profile setting with live sync and `[V]` toggle in the main control menu.
+- Added profile-aware sound file lookup plus synthesized fallback feed/carriage/head sounds.
+
+v34
+- Added persistent ribbon lifespan model and progressive print fade based on total printed characters.
+- Added `--replace-ribbon` maintenance command to fully restore ribbon life.
+- Added dashboard ribbon health telemetry and maintenance guidance.
+
+v33
+- Added jam fault simulation: 1% chance per 100 printed lines to trigger paper jam/ribbon snag.
+- Added jammed render behavior with garbled ASCII burst and grinding halt state.
+- Added flashing jam alert panel in main menu and persistent jam metadata in settings.
+- Added required jam-clear command path: type `--clear-jam` and press Enter to resume printing.
+
+v11
+- Added persistent settings load/save using dot_matrix_printer_settings.sep.
+- Saved and loaded key menu/printer settings:
+  mode_name, sound_enabled, grunge_enabled, speed_scale, feed_mode.
+- Set default speed_scale to 0.70 when no settings file exists.
+
+v12
+- Added job queue behavior so incoming network jobs are queued before print.
+- Added spool saving for jobs to a spool folder.
+- Added spool history tracking and reprint support from history.
+- Added queue/spool info into dashboard (depth, preview, counts, last spool file).
+
+v13
+- Added paper themes (CLASSIC, GREENBAR, AGED) with themed colors and perforation style.
+- Added top-of-form and manual line-feed controls.
+- Added feed/theme controls into dashboard and startup/default flow.
+
+v14
+- Added auto-fit mode setting:
+  TRUNCATE (cut to paper width) and WRAP (wrap long lines).
+- Added startup config screen with quick pre-online adjustments and auto-continue.
+- Added persistence for paper_theme and fit_mode in .sep settings file.
+
+v15
+- Reworked manual paper feed into stack-based behavior.
+- Line feed / top-of-form now keep visible paper on screen across idle flow.
+- Added theoretical paper stack capacity tracking and reset when exhausted.
+- Updated waiting-screen behavior to preserve visible paper when stack is active.
+- Added paper stack status line in dashboard.
+
+v16
+- Added separate print worker mode via CLI flags (`--print-job`, `--job-id`, `--source`, `--is-csv`).
+- Main server now launches each queued print job in a new PowerShell window.
+- Kept main emulator window free for menu/hotkey controls while jobs print.
+- Added worker startup flow that loads settings and renders from spool file input.
+- Added launch status messaging in the main dashboard when a job window is spawned.
+
+v17
+- Main window settings now live-drive separate print windows while they are printing.
+- Worker print windows now reload current settings from `.sep` during print loops.
+- Added history navigation in both directions (`H` previous, `J` next) for reliable reprint targeting.
+- Improved dashboard queue line with launched-window count and clearer history label.
+- Paper stack now updates on job launch using estimated printed line usage (not only manual feed keys).
+- Tuned paper feed animation cadence for a more authentic mechanical feel.
+
+v18
+- Fixed separate print-window launch reliability by switching to direct Python process spawning with `CREATE_NEW_CONSOLE`.
+- Removed fragile PowerShell command-string wrapping for worker process launch.
+- Added paper-feed sound playback during manual line feed and top-of-form actions from main window.
+- Kept centralized live-control behavior so main-window setting changes continue to affect active worker windows.
+
+v19
+- Restored full worker-window control handling while keeping centralized live settings.
+- Worker windows now process local hotkeys again during print loops (mode/speed/sound/feed/theme/fit/pause/abort/manual feed).
+- Fixed centralized pause wait loop so local key input is still read while paused.
+- Kept main-window control propagation through shared settings file for on-the-fly remote control.
+
+v20
+- Slowed paper feed animation timing and manual line-feed pacing for heavier, more realistic feed movement.
+- Fixed centralized pause propagation by applying `paused` from live settings in worker windows.
+- Improved live settings sync reliability by switching from coarse `getmtime` to `getmtime_ns`.
+- Increased automatic print-line feed audibility by triggering paper-feed sound before and after feed motion.
+- Added startup spool-history restore so history navigation (`H`/`J`) works across restarts.
+- Improved history key feedback/status clarity and dashboard history selection display.
+- Reworded menu/shortcut text for easier readability without changing any key bindings or behavior.
+
+v21
+- Promoted final stabilized build from v20 with history + menu readability polish.
+
+v22
+- Added `[U]` key to refresh the main dashboard from the current settings file.
+- Updated dashboard help text to include the new refresh shortcut.
+- Adjusted paper-feed animation stepping to avoid an extra blank-line advance per printed newline.
+
+v23
+- Added switchable sound profiles: `LOUD` (hammer/platen) and `QUIET` (office taps).
+- Added `[K]` menu key to toggle sound profile without changing existing controls.
+- Persisted `sound_profile` in settings file and included it in live worker-window sync.
+- Added profile-specific sound assets in `extra`:
+  `*_loud.wav` and `*_quiet.wav` variants for print/carriage/paper sounds.
+
+v24
+- Added forced main-dashboard redraw on option changes so updates are visible immediately.
+- `H/J` history selection and other menu option changes now refresh the displayed values right away.
+- Added `show_waiting_screen(..., force_redraw=True)` path to bypass paper-preserve skip when UI must update.
+
+v25
+- Added built-in `--self-test` CLI mode for quick pre-release verification.
+- Self-test checks settings roundtrip, sound-profile asset resolution, spool-history loading, live-settings sync, and render smoke path.
+- Self-test returns pass/fail via process exit code (`0` pass, `1` fail) and prints per-check status lines.
+- Added startup preflight summary line (`Startup self-test: PASS/FAIL`) during startup wait.
+
+v26
+- Fixed `Q` behavior in main menu: now exits app from main window while keeping cancel behavior in print worker windows.
+- Updated menu help text to reflect dual `Q` behavior (main exit vs print cancel).
+- Hardened sound playback with safe runtime handling so WAV playback failures fall back gracefully instead of silently breaking flow.
+- Main-window `Q` now writes a shared `stop_all_jobs` signal so active worker print jobs cancel before app exit.
+
+v27
+- Main-window `Q` now also sets a shared `hard_exit_worker` signal so active print worker terminals close immediately.
+- Worker windows now terminate on shared hard-exit signal during live settings sync.
+- Startup clears stale stop/hard-exit flags to prevent accidental carryover on relaunch.
+- Added `X` shortcut to queue a built-in classic printer demo/test page.
+- Added main-menu text and queue wiring for demo page jobs.
+- Worker print windows now render paper output only (no menu/dashboard block).
+
+v28
+- Promoted stable build with worker-window paper-only rendering and demo-page shortcut support.
+- Added spool auto-trim cap at 50 files, removing oldest jobs beyond limit.
+
+v29
+- Promoted stable build including spool folder cap behavior.
+- Added worker print-window width sizing target of 84x71 and startup flag compatibility fallback.
+- Added synchronized paper-feed sound playback and slower feed timing so line-feed audio completes.
+- Confirmed full-script smoke pass including independent worker path and live network send path.
+
+v30
+- Promoted stable build with all v29 behavior and smoke-verified runtime paths.
+
+v31
+- Added subtle per-character timing jitter to reduce robotic print cadence and improve realism.
+- Added variable carriage/feed settle timing for more authentic mechanical transitions between lines.
+- Added occasional mid-feed cadence hitch in REALISTIC mode to mimic physical tractor-feed drag.
+
+v32
+- Fixed paper stack progression to advance from actual printed lines in worker windows.
+- Persisted `paper_stack_used` in settings so main dashboard reflects live stack usage updates.
+- Fixed manual feed rollover timing so stack reset triggers immediately at capacity.
+- Added worker rollover cue when loading a fresh stack after capacity is reached.
+
+SIM B0.0.1 (Version 0.0.1 Beta Phase)
+- Archived `v56` to `old` and promoted new working build `dot_matrix_printer_network_simb0.0.1.py`.
+- Added dynamic tractor-paper width automation:
+  - New `compute_dynamic_paper_width(...)` computes active page width from the incoming character stream.
+  - Width is hard-bounded to stream constraints (`<=80`) and print layout bounds (`<=72`) to preserve border integrity.
+  - Render path now locks one `paper_width` per job and applies it consistently to header, content rows, jam line, and perforation rows.
+- Added rational exponential ribbon decay model:
+  - New `ribbon_decay_curve(health)` with two-phase behavior:
+    - smooth fade term: `smooth = (1 - health)^3.4`
+    - low-health collapse term (single-digit region): `collapse = ((0.09 - health) / 0.09)^2.1`, only when `health < 0.09`
+  - `age_character(...)` now derives degradation factors from:
+    - `extra_dropout = (0.02 * smooth) + (0.65 * collapse)`
+    - `extra_faint   = (0.04 * smooth) + (0.22 * collapse)`
+    - `ghost_chance  = (0.02 * smooth) + (0.30 * collapse)`
+- Result: readability is preserved much longer, with corruption accelerating near single-digit ribbon life.
+
+SIM B0.0.1 HOTFIX #1
+- Safety backup created before edits:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix1.py`
+- Added absolute zero print block:
+  - `age_character(...)` now hard-returns `" "` when `ribbon_health <= 0.0`, guaranteeing full visual dropout at 0%.
+- Added ribbon-depleted interrupt flow (jam-like pause/resume):
+  - New state flag persisted in settings: `ribbon_depleted_active`.
+  - New trigger: `trigger_ribbon_depleted(...)`.
+  - New wait loop: `wait_if_ribbon_depleted(...)`.
+  - On depletion: printing freezes and displays:
+    `[!] ERROR: RIBBON DEPLETED. PLEASE REPLACE RIBBON TO RESUME.`
+    plus command guidance `--replace-ribbon + Enter`.
+  - `replace_ribbon(...)` now clears depleted state and resumes.
+- Main-menu behavior while depleted:
+  - Halts network queue consumption/dequeue into spool job records.
+  - Prevents launching new print jobs until ribbon is replaced.
+- Image-to-ASCII hotfix:
+  - Preserved multi-row output explicitly with newline-joined rows (no row-strip collapse).
+  - Added compatibility alias: `process_image_to_ascii(...)`.
+- Socket read block size tuned for controlled image payload intake:
+  - `receive_all(...)` block read changed from `65536` to `4096` bytes.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #2
+- Safety backup created before edits:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix2.py`
+- Reconciled early ribbon degradation with strict threshold floor:
+  - `age_character(...)` now returns unmodified characters for all health `>= 0.09`.
+  - This enforces absolute zero degradation noise above the 9% collapse zone.
+  - At `<= 0.0`, output remains hard blank-only dropout.
+- Full styling reset on replace-ribbon command:
+  - `replace_ribbon(...)` now clears command/depleted visual interrupt state and restores pristine text output behavior immediately.
+  - Reset actions include:
+    - `ribbon_health = 1.0`
+    - `ribbon_chars_used = 0`
+    - `ribbon_depleted_active = False`
+    - `command_mode = False`
+    - `command_buffer = ""`
+    - `jam_alert_phase = False`
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #3
+- Safety backup created before edits:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix3.py`
+- Eliminated phantom spaces/jitter above threshold:
+  - In the render loop, mechanical jitter insertion now requires `ribbon_health < 0.09`.
+  - This hard-disables accidental space insertion for all ribbon health `>= 9%`.
+- Result:
+  - Above 9%: continuous text stream with zero degradation jitter/drop spaces.
+  - Below 9%: jitter/degradation behavior remains active by design.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #4
+- Safety backup created before edits:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix4.py`
+- Persist print window after job completion:
+  - Removed worker auto-close delay behavior.
+  - After a print job completes, worker window now remains open indefinitely.
+  - Added explicit prompt in worker window:
+    `[Print job complete. Press Q to close this print window.]`
+  - Worker returns/closes only after manual `Q` keypress.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #5
+- Safety backup created before edits:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix5.py`
+- Intensified existing low-ribbon font-weight fade (below 9% only):
+  - Increased low-health faint/ghost weighting in `age_character(...)`.
+  - Added stronger thinning substitution profile at `<= 4%` health using lighter ASCII marks.
+  - Increased heavy-glyph thinning sensitivity so dense characters degrade more visibly near depletion.
+- Layout/spacing stability preserved:
+  - No new jitter/phantom-space alignment logic introduced.
+  - Output width remains fixed one-character replacement per input character path.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #6
+- Safety backup created before edits:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix6.py`
+- Line-feed ("chunk"/stepper) volume reduced significantly:
+  - Updated paper-feed gain in linefeed variant path only:
+    - `LOUD`: `0.22 -> 0.10`
+    - `QUIET`: `0.16 -> 0.04`
+- Scope isolation:
+  - No changes to pin-strike pitch/speed variation logic.
+  - No changes to character strike timing, profile timing loops, or core emulator loop.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #6B
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix6b.py`
+- Additional loud-profile line-feed attenuation:
+  - `paper` linefeed gain reduced further in loud profile only:
+    - `LOUD`: `0.10 -> 0.07`
+    - `QUIET`: unchanged at `0.04`
+- Scope isolation:
+  - No changes to pin-strike pitch/speed variation or strike timing.
+  - No core emulator-loop changes.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #7
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix7.py`
+- Pin-strike tone softening (targeted):
+  - Reduced strike playback speed band to lower pitch / less treble bite:
+    - `speed_factor`: `0.95..1.05` -> `0.88..0.96`
+  - Reduced strike loudness range:
+    - `volume`: `0.90..1.00` -> `0.58..0.76`
+  - Quiet profile retains additional attenuation (`*0.70`).
+  - Non-pygame fallback path now also uses slowed strike variant for softer tone.
+- Scope isolation:
+  - No changes to line-feed gain logic from Hotfix 6B.
+  - No changes to fixed-width spacing/render loop behavior.
+  - No changes to core emulator control flow.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #7B
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix7b.py`
+- Additional pin-strike harshness reduction:
+  - Further lowered strike playback speed band:
+    - `0.88..0.96` -> `0.82..0.92`
+  - Further lowered strike gain range:
+    - `0.58..0.76` -> `0.48..0.66`
+  - Increased quiet-profile attenuation:
+    - `*0.70` -> `*0.65`
+  - Fallback strike softening band lowered:
+    - `0.90..0.96` -> `0.84..0.92`
+- Scope isolation:
+  - No changes to render spacing/core loop.
+  - No changes to line-feed tuning from Hotfix 6B.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #8
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix8.py`
+- Pin-strike loudness boost:
+  - Applied exact `+20%` gain multiplier in pin-strike pygame playback path (`volume *= 1.20`).
+  - Preserved Hotfix 7B pitch caps and muffled tone shaping.
+- Scope isolation:
+  - No changes to line-feed volume settings from Hotfix 6B.
+  - No changes to core rendering loop or fixed-width spacing.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #9
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix9.py`
+- Line-feed gain slashed by exactly 55% from current values:
+  - LOUD: `0.07 -> 0.0315` (`0.07 * 0.45`)
+  - QUIET: `0.04 -> 0.018` (`0.04 * 0.45`)
+- Scope isolation:
+  - Preserved Hotfix 8 pin-strike +20% boost.
+  - Preserved Hotfix 7B pitch/muffle caps.
+  - No changes to rendering/spacing/core loop paths.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #9B
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix9b.py`
+- Additional tractor single-line feed attenuation:
+  - Line-feed gain reduced further:
+    - LOUD: `0.0315 -> 0.012`
+    - QUIET: `0.018 -> 0.006`
+- Scope isolation:
+  - Pin-strike pitch cap/muffle and Hotfix 8 strike loudness left unchanged.
+  - No render/spacing/core loop changes.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #9C
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix9c.py`
+- Resolved persistently loud single-line feed path:
+  - Added 8-bit PCM attenuation in `_build_linefeed_variant(...)` so gain scaling applies to both 8-bit and 16-bit WAV sources.
+  - Reduced line-feed gain further:
+    - LOUD: `0.004`
+    - QUIET: `0.002`
+- Scope isolation:
+  - Pin-strike tone/volume settings from Hotfix 7B/8 unchanged.
+  - Render/spacing/core-loop paths unchanged.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+HOTFIX ORDER NOTE
+- Confirmed patch ordering: Hotfix #7/#7B (pin-strike tone softening) and Hotfix #8 (pin-strike +20% loudness) were applied and stabilized before Hotfix #9/#9B/#9C line-feed attenuation fixes.
+
+SIM B0.0.1 HOTFIX #10
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix10.py`
+- Near Letter Quality (NLQ) contingency deployed:
+  - Added NLQ double-strike glyph pass to render path.
+  - In `NLQ` mode, non-space characters are overstruck to dense `#` output to simulate heavy, ink-saturated second-pass hardware behavior.
+  - Kept fixed-width spacing intact (1:1 character replacement, no layout-width changes).
+- Scope isolation:
+  - No edits to audio gain structure, 8-bit/16-bit feed fixes, or pitch-muffle curves from 7B–9C.
+  - No timing-loop changes.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #11
+- Safety backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.1_pre_hotfix11.py`
+- Audio buffer concurrency stabilization for high-throughput print bursts:
+  - Added dedicated pygame print-strike channel pool (`Channel 3..6`) for non-blocking concurrent strike playback.
+  - Replaced single-channel strike replay with idle-channel selection + round-robin cursor.
+  - When all print channels are busy, strike tick is safely skipped (no forced fallback overlap/truncation).
+  - Stop path now stops all dedicated print channels cleanly.
+- Scope isolation:
+  - No changes to gain structures or muffle curves from Hotfixes 7B–9C.
+  - No changes to NLQ double-strike rendering logic from Hotfix 10.
+- Validation:
+  - 25-point smoke harness: `25/25 passed`.
+
+SIM B0.0.1 HOTFIX #13 (Structural Organization)
+- Directory sanitization:
+  - Procedurally generated WAV variants now organized under:
+    - `extra/assets/ibm_9pin/warmup/`
+    - `extra/assets/ibm_9pin/steady_state/`
+    - `extra/assets/panasonic_24pin/warmup/`
+    - `extra/assets/panasonic_24pin/steady_state/`
+- Memory registry mapping:
+  - Added startup asset registry preload map:
+    - `registry[printer_type][state][pitch_index] -> absolute wav path`
+  - High-throughput lookup paths now query in-memory registry before file probing.
+- Explicit channel segregation:
+  - Added dedicated `PygameChannelRouter`.
+  - Channels `0-1`: reserved loop channels (carriage/motor loop states).
+  - Channels `2-7`: round-robin transient strike pool, no strike-channel truncation unless pool saturation.
+- File-path verification:
+  - Script compile/load pass.
+  - Asset tree auto-creation verified.
+  - Registry map population and key lookup verified.
+  - Channel router allocation verified (`2` loop + `6` strike channels).
+- Scope isolation:
+  - No raw WAV data edits.
+  - No gain-curve or simulation-physics changes from Hotfix 6 baseline.
+
+SIM B0.0.1 HOTFIX #1-#6 RECAP
+- Hotfix #1: stabilized image-to-ASCII routing and controlled payload read flow.
+- Hotfix #2: enforced 9% degradation floor; full visual reset on ribbon replace.
+- Hotfix #3: removed phantom jitter/space above threshold (>=9% clean output).
+- Hotfix #4: print window remains open after job completion until manual `Q`.
+- Hotfix #5: stronger low-ribbon fade intensity while preserving fixed-width layout.
+- Hotfix #6: reduced line-feed gain path only; strike path untouched.
+
+SIM B0.0.15 SERIES (ALL HOTFIX VERSIONS)
+- `b0.0.15`:
+  - preserved Hotfix #13 structure and restored abrupt mechanical strike truncation behavior.
+  - added head-asset prewarm improvements to reduce PAN24 switch lag.
+- `b0.0.15_hotfix1`:
+  - added IBM9 NLQ double-pass timing/audio pass over same printed line.
+  - removed hash-overwrite regression and restored alphanumeric output integrity.
+- `b0.0.15_hotfix2`:
+  - IBM9 text-weight tuning: lighter DRAFT presentation + heavier NLQ second-pass styling path.
+  - IBM9 NLQ ribbon wear now declines slightly faster than standard mode.
+
+SIM B0.0.15 HOTFIX #3 (Menu/Input Isolation)
+- Fixed keyboard shortcut leakage into print worker windows.
+- Added `menu_window` input gate in `drain_keyboard(...)`.
+- Printer window now ignores all config/menu hotkeys while printing.
+- Printer window still accepts dedicated `Q` cancel/exit behavior.
+- Scope isolation:
+  - No changes to IBM9 NLQ double-pass logic.
+  - No changes to ribbon decay multipliers.
+  - No changes to prewarmed PAN24/asset cache paths.
+- Validation:
+  - `py_compile` passed.
+
+SIM B0.0.16 (IBM9 Cold-Load Warmup Feel)
+- Archived prior active beta (`b0.0.15_hotfix2`) to `old/` and promoted new active build file:
+  - `current_working_build/dot_matrix_printer_network_simb0.0.16.py`
+- Reintroduced authentic IBM9 startup behavior (intentional cold-phase timing jitter):
+  - Added IBM9-only warmup counter (`_ibm9_cold_ticks_remaining`).
+  - During cold phase:
+    - slower/randomized strike-speed selection,
+    - occasional skipped strike tick,
+    - longer pre-strike micro-delays.
+  - After warmup counter decays, playback returns to normal smooth timing path.
+- Head-switch behavior:
+  - Switching to IBM9 resets cold-phase counter to re-create startup warmup feel.
+  - PAN24 does not reset or use this cold-phase behavior.
+- Scope isolation:
+  - Prewarm/cache architecture retained.
+  - Existing IBM9 NLQ double-pass logic retained.
+  - Ribbon decay multipliers unchanged.
+- Validation:
+  - `py_compile` passed.
+  - quick runtime sanity confirms cold counter decay and IBM9 switch reset behavior.
+
+SIM B0.0.16 HOTFIX (IBM9 DRAFT-Only Cold Start Gate)
+- Backup created before edit:
+  - `old/dot_matrix_printer_network_simb0.0.16_pre_draft_coldstart_tune.py`
+- Cold-start behavior is now mode-gated to IBM9 DRAFT only:
+  - IBM9 + DRAFT: cold-load warmup timing/jitter active.
+  - IBM9 + NLQ: cold-load warmup disabled.
+  - PAN24 modes: cold-load warmup disabled.
+- Head/mode switch behavior:
+  - `prepare_active_head_assets()` now resets warmup counter only for IBM9+DRAFT.
+  - Warmup counter is forced to `0` outside IBM9+DRAFT.
+- Scope isolation:
+  - IBM9 NLQ double-pass logic unchanged.
+  - Ribbon decay multipliers unchanged.
+  - Prewarm/cache architecture unchanged.
+- Contingency validation:
+  - Compile passed.
+  - Focused runtime checks passed:
+    - IBM9 DRAFT cold active (`28 -> 24`),
+    - IBM9 NLQ disabled (`0`),
+    - PAN24 DRAFT disabled (`0`),
+    - mode-gated reset verified (`NLQ=0`, `DRAFT=28`).
+
+SIM B0.0.165 (Universal Cold Printhead Warmup Ramp)
+- Backup/archival flow:
+  - Backed up `b0.0.16` before edits:
+    - `old/dot_matrix_printer_network_simb0.0.16_pre_b0.0.165_backup.py`
+  - Moved previous active file to archive:
+    - `old/dot_matrix_printer_network_simb0.0.16.py`
+  - New editable active build:
+    - `current_working_build/dot_matrix_printer_network_simb0.0.165.py`
+- Cold-start logic updated only:
+  - Warmup now applies to IBM9 and PAN24 in both DRAFT and NLQ.
+  - Uses an exponential line-based ramp over first ~12 lines.
+  - Startup is intentionally very slow/jittery in first few lines, then accelerates toward smooth steady state by lines 10-12.
+- Scope isolation:
+  - No other print/audio/ribbon/network/menu behaviors changed.
+- Contingency validation:
+  - Compile passed.
+  - Focused runtime warmup trend checks passed across all head/mode combinations.
+
+SIM B0.0.165 HOTFIX A (Warmup Window + Taper Refinement)
+- Cold-start warmup window now:
+  - starts at line `1` for every new print window.
+  - ends at a randomized line between `12` and `17` per window instance.
+- Warmup visibility shaping:
+  - from line `6` onward, startup pauses/stutters taper down progressively as line number increases.
+  - line `12+` and beyond warmup-end return to normal timing path.
+- Scope isolation:
+  - no changes to networking, ribbon math, NLQ double-pass behavior, or asset registry layout.
+- Validation:
+  - compile passed.
+
+SIM B0.0.165 HOTFIX B (Paper Jam Trigger + Menu-Window Clear Messaging)
+- Jam trigger frequency increased:
+  - `JAM_CHANCE_PER_BLOCK: 0.01 -> 0.05` (5% chance per 100-line block check).
+- Jam guidance made explicit for control split:
+  - alert now instructs: `MENU WINDOW ONLY: : --clear-jam + ENTER TO RESUME`.
+  - status message now points users to menu-window command entry.
+- Scope isolation:
+  - keyboard split policy preserved (print window: `Q` only; menu window: commands/settings).
+- Validation:
+  - compile passed.
+
+TEST RUN NOTE
+- Full 25-point harness was initiated for this branch but the run was manually interrupted before completion.
+
+SIM 0.0.169 (Base Timing Consolidation)
+- IBM9 `char_delay()` now uses baseline timing scaled by `speed_scale`:
+  - DRAFT: `0.005`
+  - NLQ: `0.020`
+- Mechanical impact sleep path normalized to a shared jitter/stutter model for IBM9 and PAN24.
+- Added IBM9-only post-line carriage settle pause (`time.sleep(0.20)`) before carriage return sound.
+
+SIM B0.0.169 HOTFIX CHAIN (Recorded)
+- `b0.0.169_hotfix1`:
+  - baseline IBM9 speed-governed timing pass established for 0.0.169 branch.
+- `b0.0.169_hotfix2`:
+  - retained micro-jitter outside startup warmup to avoid overly uniform long-run cadence.
+- `b0.0.169_hotfix3`:
+  - warmup envelope converted to repeating 11-line phase cycle across full-job operation.
+- `b0.0.169_hotfix5`:
+  - profile-split cadence behavior:
+    - PAN24 warmup kept only for startup lines, then fixed steady cadence.
+    - IBM9 keeps rolling warmup-style cadence/jitter through entire job.
+  - added PAN24 baseline timing constants and aligned carriage settle pacing for both head profiles.
