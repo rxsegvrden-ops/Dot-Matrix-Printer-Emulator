@@ -1,0 +1,261 @@
+Dot Matrix Printer Emulator
+Release Notes (v11 -> v43)
+
+Current Build
+- dot_matrix_printer_network_simv48.py
+
+v48 - Intake Bound + Softer Feed Audio
+- Line-feed sound is now less harsh by preferring the quieter paper-feed WAV asset directly (`dot_matrix_paper_feed_quiet.wav`).
+- Added a hard bound on incoming network job payload size (`2MB` per job) for safer memory behavior under burst clients.
+- Oversized inbound payloads are truncated at the cap while receiver flow remains active.
+- Queue and spool bounded behavior were soak-verified under sustained multi-sender load.
+
+v47 - Physical Page-Boundary Stack Counter Fix
+- Fixed paper stack telemetry so `STACK x/36` advances only when a full physical page boundary is reached.
+- Page-boundary triggers now match printer semantics:
+  - rollover at 66 lines,
+  - form-feed character (`\f`),
+  - manual top-of-form macro (`T`).
+- Corrected physical print-row addressing to use within-page line position instead of stack-page index.
+- Preserved manual line-feed/top-of-form visual feed behavior while preventing false stack-page increments.
+
+v43 - Original WAV Driven Print-Strike Refit
+- Print-line strike generation now always uses the original `dot_matrix_sound.wav` source.
+- Added fixed source trim offset (~3 seconds) before strike extraction to skip noisy intro material.
+- Increased strike playback speed ranges to make print cadence feel faster while keeping strikes longer than single-click blips.
+- Expanded strike-variant pool size to increase randomness from hit to hit.
+- Rebalanced quiet profile to stay cleaner and less muffled while still quieter than loud mode.
+
+v42 - Aggressive Head-Voice Rework
+- Replaced static print-loop sound bed with immediate one-shot head-strike playback.
+- Added two distinct head voices with separate source pools:
+  - `IBM9` uses impact-heavy nadeldrucker/legacy print samples.
+  - `PAN24` uses faster, higher-pitch 24-pin-derived strike variants.
+- Added automatic leading-noise trim and short-strike slicing so head audio starts immediately.
+- Added faster print-strike timing and per-strike speed/gain variation for a less static print cadence.
+- Reworked quiet/loud behavior so QUIET is reduced-gain dynamics rather than muffled alternate files.
+
+v41 - Dynamic Line-Feed Audio Variation
+- Added randomized per-line feed variation to reduce static repetition:
+  - playback speed/pitch shift between `0.95` and `1.05`
+  - random micro pre-trigger delay between `1ms` and `15ms`
+  - per-line feed gain variation between `90%` and `100%`
+- Added cached line-feed WAV variant generation so dynamic behavior stays performant during long jobs.
+- Kept synchronized feed playback path so line-feed sound finishes cleanly when triggered.
+
+v39 - Audio Rollback to v32-Style Behavior
+- Reverted sound engine behavior to older v32-style playback flow.
+- Removed recent randomized/profile-layered print tick logic from runtime path.
+- Restored base active WAV files from the prior backup set:
+  - `dot_matrix_sound.wav`
+  - `dot_matrix_paper_feed.wav`
+  - `dot_matrix_carriage_return.wav`
+- Kept synchronized line-feed playback behavior so feed sounds complete when triggered.
+
+v38 - Real WAV Mapping + Buffered Intake
+- Mapped user-provided real recordings to profile behavior:
+  - `PAN24`: `24pin_dotmatrixprinter.wav` bed + PAN24 profile clacks
+  - `IBM9`: `nadeldrucker*.wav` variants for impact clack character
+- Restored non-cut feed behavior by keeping synchronized feed playback where line feed occurs.
+- Added randomized per-character clack selection from multiple source files to avoid repetitive identical print lines.
+- Added threaded socket receiver + bounded input queue so large incoming jobs are buffered without stalling the main loop.
+- Added overflow-safe queue behavior (oldest pending packet dropped first when queue is full).
+
+v37 - New Sound Pack Refresh
+- Replaced default head/feed/carriage sound assets with a new chunkier voice pack tuned for terminal playback.
+- Added dedicated IBM9 and PAN24 WAV variants in `extra` so both sound profiles have distinct character without relying on generic fallback.
+- Added profile-specific loud aliases for clearer differentiation in mixed sound-profile states.
+
+v36 - Shutdown + Paging + UI + Audio Reliability
+- Fixed main-menu `Q` flow: now signals active print windows to stop, waits for worker windows to fully close, then exits main menu.
+- Added real page counting with standard 66-line pages instead of treating each printed line as a page.
+- Page counter now advances on:
+  - every 66 printed lines,
+  - detected form-feed characters (`\\f`),
+  - manual top-of-form macro (`T`).
+- Refined dashboard readability with clearer status grouping and explicit page/line telemetry.
+- Fixed audio profile behavior so IBM9/PAN24 differences remain audible even when generic base WAV files exist.
+
+v35 - 9-Pin / 24-Pin Audio Character
+- Added switchable print-head sound profiles: `IBM9` and `PAN24`.
+- `IBM9` voice emphasizes louder metallic impact clicks; `PAN24` voice emphasizes higher-pitched whir/buzz character.
+- Added `[V]` keyboard shortcut and dashboard visibility for head profile changes.
+- Sound engine now supports profile-specific WAV lookup (`*_ibm9*.wav`, `*_pan24*.wav`) with synthesized fallback voicing when files are missing.
+
+v34 - Ribbon Lifespan and Maintenance
+- Added persistent virtual ribbon lifespan tracked by total printed characters.
+- Ribbon output now gradually fades from strong print to ghosted characters over long runs.
+- Added `--replace-ribbon` maintenance command to restore ribbon life to 100%.
+- Added dashboard ribbon-life status with maintenance hint.
+
+v33 - Paper Jam Fault System
+- Added a virtual jam system with a 1% chance per 100 printed lines for a paper jam/ribbon snag event.
+- On jam, print output injects a garbled ASCII fault burst and shifts to a grinding halt state.
+- Added a flashing jam alert block in the main menu window with fault reason and trigger line.
+- Jam state persists and must be cleared by typing `--clear-jam` and pressing Enter.
+- Worker and main windows live-sync jam status via the shared settings file.
+
+v32 - Paper Stack Behavior Fix
+- Paper stack tracking now advances on actual printed lines in worker print windows instead of only pre-job estimates.
+- Paper stack state now persists in settings and is live-synced back to the main window status panel.
+- Fixed manual line-feed stack rollover so hitting stack capacity now resets immediately instead of one feed late.
+- Added visible stack rollover cue in the print window when a fresh stack is loaded.
+
+v31 - Mechanical Authenticity Pass
+- Added subtle impact-timing jitter per character so print head rhythm feels less perfectly digital.
+- Added occasional micro-stutter in line-feed cadence for a more mechanical tractor-feed feel.
+- Added line-settle timing variation between carriage return and next-line feed for more realistic motion.
+
+v30 - Promotion + Smoke-Verified Runtime
+- Promoted stable build with worker paper-only windows, demo page key, spool cap, and feed-sound completion fixes.
+- Includes independent worker-path and live network-send smoke validation coverage.
+
+v29 - Spool Cap Promotion
+- Includes spool folder auto-trim behavior capped at 50 job files.
+- Retains paper-only worker windows and demo test page shortcut.
+
+v28 - Paper-Only Worker Windows
+- Worker print windows now open as paper-output-only (dashboard/menu removed).
+- Includes built-in demo test page key (`X`) in main window queue controls.
+
+v27 - Worker Terminal Close Fix
+- Main-window `Q` now closes active worker print terminals immediately via shared hard-exit signaling.
+- Worker windows now honor hard-exit during live settings polling and terminate promptly.
+- Startup now clears stale stop/hard-exit flags for clean relaunch behavior.
+
+v26 - Quit + Sound Hardening
+- Main menu `Q` now exits the app cleanly; print-window `Q` still cancels active print jobs.
+- Updated on-screen shortcut description so `Q` behavior is explicit.
+- Added safer sound playback handling to reduce silent failure scenarios if WAV playback errors occur.
+- Main-window `Q` now signals active worker windows to stop current print jobs before exit.
+
+v25 - Built-in Self-Test
+- Added `--self-test` mode to run a one-command preflight health check.
+- Verifies settings persistence, sound profile assets, spool history load, live sync behavior, and render path stability.
+- Returns clear pass/fail output and a non-zero exit code on failure for release sanity checks.
+
+v24 - Immediate Menu Refresh
+- Menu option changes now force immediate dashboard refresh in the main window.
+- History navigation (`H/J`) and other option updates are shown right away instead of waiting for the next redraw cycle.
+- Added explicit forced redraw path when paper-preserve mode is active.
+
+v23 - Sound Profile Toggle
+- Added `K` shortcut to toggle sound profile between `LOUD` and `QUIET`.
+- Added persistent and live-synced sound profile setting across main and worker windows.
+- Added dedicated profile sound files (`*_loud.wav` and `*_quiet.wav`) for print, carriage, and paper feed.
+
+v22 - Main Refresh + Feed Step Fix
+- Added `[U]` shortcut to refresh the main menu/dashboard from current settings.
+- Updated displayed shortcut help so refresh control is visible.
+- Fixed extra blank-line feed advance by reducing feed animation steps per printed newline.
+
+v21 - Final Stabilization and UX Polish
+- Rolled forward final v20 fixes as the active stable build.
+- History navigation now persists across restarts via spool-history restore.
+- Dashboard and shortcut wording were clarified for easier reading without changing controls.
+
+v20 - Feed/Pause/Live Sync Reliability
+- Slowed line-feed behavior for a heavier, more authentic paper movement feel.
+- Fixed main-window pause control so worker print windows honor it in real time.
+- Improved live menu setting updates in worker windows using high-resolution settings-file timestamp checks.
+- Boosted automatic line-feed audibility during print jobs with stronger paper-feed trigger timing.
+
+v19 - Worker Controls Restored
+- Restored worker-window hotkey handling during active print jobs.
+- Fixed paused-state handling so worker windows still accept key input while paused.
+- Kept centralized main-window live control behavior through shared settings updates.
+- Resolved the “half the menu controls don’t work in new windows” regression.
+
+v18 - Worker Launch + Feed Sound Fixes
+- Fixed new print-window launching by using direct Python process spawn (`CREATE_NEW_CONSOLE`).
+- Improved reliability of separate worker window creation for incoming jobs.
+- Added paper-feed audio during manual line-feed and top-of-form actions in the main window.
+- Preserved centralized live-control behavior for active worker print windows.
+
+v17 - Centralized Live Control + Feed/History Fixes
+- Main menu controls now live-update active separate print windows.
+- Worker windows reload settings during printing (mode, speed, sound, ribbon, feed style, theme, fit).
+- Improved history selection with backward/forward navigation (`H`/`J`) and cleaner status feedback.
+- Paper stack usage now advances when jobs launch, so stack behavior is visible outside manual feed.
+- Paper feed animation was tuned to feel more mechanical and authentic.
+
+v16 - Separate Print Windows
+- Added separate print worker mode using CLI job arguments.
+- Each queued network job now opens in a new PowerShell print window.
+- Main emulator window stays available for live menu/hotkey controls while printing.
+- Worker windows load current settings and print from spool file content.
+- Added dashboard status message confirming job window launch.
+
+v15 - Realistic Paper Feed
+- Added stack-based paper feed behavior.
+- Line feed and top-of-form now keep paper visible during idle flow.
+- Added theoretical paper stack capacity with reset when exhausted.
+- Preserved visible paper state on waiting screen.
+- Added paper stack status to dashboard.
+
+v14 - Fit and Startup Controls
+- Added fit mode options:
+  - TRUNCATE: cut lines to paper width
+  - WRAP: wrap long lines to next line
+- Added startup config screen for quick pre-online setup.
+- Saved/loaded paper_theme and fit_mode in settings.
+
+v13 - Paper Themes and Feed Tools
+- Added paper themes: CLASSIC, GREENBAR, AGED.
+- Added manual line feed and top-of-form controls.
+- Added feed/theme controls to dashboard and startup flow.
+
+v12 - Queue and Spool System
+- Added print job queue for incoming network jobs.
+- Added spool file saving.
+- Added spool history and reprint from history.
+- Added queue/spool status and counters to dashboard.
+
+v11 - Persistent Settings
+- Added settings persistence via dot_matrix_printer_settings.sep.
+- Settings now save/load for:
+  mode_name, sound_enabled, grunge_enabled, speed_scale, feed_mode.
+- Default speed_scale now initializes to 0.70 when no settings file exists.
+
+Beta b0.0.1 - Hotfix 1 through 6 Summary
+- Hotfix 1: image routing and stream handling stability pass.
+- Hotfix 2: strict degradation threshold behavior + complete replace-ribbon visual reset.
+- Hotfix 3: eliminated unintended spaces/jitter above the 9% collapse zone.
+- Hotfix 4: completed print jobs remain on screen until manual close (`Q`).
+- Hotfix 5: intensified low-health ribbon fade without spacing drift.
+- Hotfix 6: reduced line-feed loudness while preserving strike-path behavior.
+
+Beta b0.0.15 - All Hotfix Versions
+- b0.0.15:
+  - retained structured asset/channel architecture; restored abrupt mechanical strike feel.
+  - PAN24 switch path optimized via head prewarm and safer switch-state handling.
+- b0.0.15_hotfix1:
+  - IBM9 NLQ double-pass audio/timing deployed.
+  - corrected text overwrite regression; restored true alphanumeric rendering.
+- b0.0.15_hotfix2:
+  - IBM9 DRAFT/NLQ visual weight separation refined.
+  - IBM9 NLQ ribbon decay slightly accelerated for heavier double-strike wear realism.
+
+Beta b0.0.165 - Warmup + Jam UX Refinements
+- Printhead cold-start behavior now begins on line 1 and automatically ends at a randomized line between 12 and 17 per print window.
+- Startup stutter intensity now decreases progressively from line 6 onward for a smoother warmup taper.
+- Paper-jam simulation frequency increased to 5% per 100-line block-check interval.
+- Jam alert and status text now explicitly directs recovery from the menu window using:
+  - `: --clear-jam` + Enter
+
+0.0.169 - Base Timing Consolidation
+- IBM9 print impact cadence now uses explicit baseline timing (`0.005` DRAFT / `0.020` NLQ) with `speed_scale` control.
+- Impact sleep jitter/stutter path was unified so both IBM9 and PAN24 run through the same core mechanical timing model.
+- Added IBM9-only post-line carriage settle pause (`~0.20s`) before carriage return playback.
+
+Beta b0.0.169 - Hotfix Track (Recorded)
+- `b0.0.169_hotfix1`:
+  - stabilized 0.0.169 IBM9 speed-controlled baseline pacing.
+- `b0.0.169_hotfix2`:
+  - kept micro-jitter active beyond startup warmup during sustained print runs.
+- `b0.0.169_hotfix3`:
+  - changed warmup behavior to a repeating 11-line phase envelope for full-job mechanical cadence.
+- `b0.0.169_hotfix5`:
+  - PAN24 now uses startup-only warmup then steady fixed cadence.
+  - IBM9 retains rolling warmup-style cadence and jitter across the full print job.
+  - added PAN24-specific baseline constants and matched carriage settle pacing for both head profiles.
