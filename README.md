@@ -229,27 +229,6 @@ This tracks smaller fixes and hot patches. It is useful for minor behavioral fix
 current_working_build/DEBUG/
 ```
 
-The debug folder contains test notes, harness output, and historical smoke-test results. These files are useful for development, but they do not need to be bundled with every public release.
-
-
-```gitignore
-old/
-__pycache__/
-.codex/
-
-current_working_build/__pycache__/
-current_working_build/.venv/
-current_working_build/build_out/
-current_working_build/spool/
-current_working_build/tmp_sound_extract/
-current_working_build/dot_matrix_source_pack.zip
-
-current_working_build/extra/assets/
-current_working_build/extra/__print_variants/
-current_working_build/extra/__linefeed_variants/
-current_working_build/extra/dot_matrix_printer_settings.sep
-```
-
 
 ## Versioning Habit
 
