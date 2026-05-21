@@ -232,36 +232,6 @@ current_working_build/DEBUG/
 The debug folder contains test notes, harness output, and historical smoke-test results. These files are useful for development, but they do not need to be bundled with every public release.
 
 
-## What To Upload To GitHub
-
-For a clean source repository, upload the important source and small documentation files first.
-
-Recommended:
-
-```text
-README.md
-current_working_build/dot_matrix_printer_network_simb0.0.17.py
-current_working_build/extra/UPDATE_LOG.txt
-current_working_build/extra/RELEASE_NOTES.txt
-current_working_build/extra/PATCH_NOTES.txt
-```
-
-Optional:
-
-```text
-current_working_build/DEBUG/
-current_working_build/extra/*.wav
-```
-
-Only upload WAV files if you have the right to share them and you actually want them in the repository.
-
-
-## What To Ignore
-
-The project contains a lot of generated files. Some generated audio folders are several gigabytes and should not be uploaded to GitHub.
-
-Recommended `.gitignore` entries:
-
 ```gitignore
 old/
 __pycache__/
@@ -280,16 +250,6 @@ current_working_build/extra/__linefeed_variants/
 current_working_build/extra/dot_matrix_printer_settings.sep
 ```
 
-Why these should be ignored:
-
-- `old/` is local version history, not source code history.
-- `spool/` is runtime print history.
-- `.venv/` is a local Python environment.
-- `build_out/` is generated build output.
-- `__pycache__/` is Python cache data.
-- `extra/assets/`, `extra/__print_variants/`, and `extra/__linefeed_variants/` are generated audio caches and can become extremely large.
-- `dot_matrix_printer_settings.sep` is local machine state.
-
 
 ## Versioning Habit
 
@@ -299,7 +259,7 @@ The development workflow for this project has been intentionally conservative:
 2. Edit the new copy.
 3. Archive the previous version into `old/`.
 4. Run compile checks or smoke tests.
-5. Update logs when requested.
+5. Update logs
 
 This makes it easier to roll back when a timing/audio/network change breaks something.
 
