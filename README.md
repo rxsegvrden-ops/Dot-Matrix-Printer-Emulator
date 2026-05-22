@@ -72,7 +72,7 @@ From PowerShell:
 
 ```powershell
 cd L:\DOTMATRIXPRINTEMULATOR\current_working_build
-python .\dot_matrix_printer_network_simb0.0.17.py
+python .\dot_matrix_printer_network_simb0.0.17hotfix3.py
 ```
 
 The server binds to:
@@ -179,15 +179,13 @@ DOTMATRIXPRINTEMULATOR/
     extra/
     spool/
     DEBUG/
-    build_out/
     tools/
-  old/
 ```
 
 Important folders:
 
 - `current_working_build/` contains the active source and runtime folders.
-- `current_working_build/extra/` contains audio files, notes, settings, and generated audio asset folders.
+- `current_working_build/extra/` contains audio files, notes, settings, and generated audio asset folders. Uploaded in the .7z file.
 - `current_working_build/spool/` contains runtime print-job history.
 - `current_working_build/DEBUG/` contains debug notes, harness files, and smoke-test logs.
 - `current_working_build/build_out/` contains build artifacts from EXE packaging attempts.
@@ -245,7 +243,7 @@ This makes it easier to roll back when a timing/audio/network change breaks some
 
 ## Current Validation
 
-The latest active build, `b0.0.17`, passed a 25-point smoke test.
+The latest active build, `b0.0.17hotfix3`, passed a 25-point smoke test.
 
 Covered areas included:
 
