@@ -5,7 +5,7 @@ A Windows terminal-based dot matrix printer emulator that accepts print jobs ove
 The current working build is:
 
 ```text
-current_working_build/dot_matrix_printer_network_simb0.0.17.py
+current_working_build/dot_matrix_printer_network_simb0.0.17hotfix3.py
 ```
 
 This project started as a practical terminal printer receiver and grew into a small hardware-style simulator. It is meant to feel like an old continuous-feed printer sitting on the network, with the main menu staying available while print jobs open in their own console window.
