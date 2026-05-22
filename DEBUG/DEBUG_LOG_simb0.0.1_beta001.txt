@@ -1,0 +1,278 @@
+Dot Matrix Emulator SIM B0.0.1 - Version 0.0.1 Beta Debug Log
+Generated: 2026-05-19
+Target: L:\DOTMATRIXPRINTEMULATOR\current_working_build\dot_matrix_printer_network_simb0.0.1.py
+
+Scope (regression-safe / minimal service area)
+- Dynamic tractor-paper width automation only in render path.
+- Rational exponential ribbon decay only in character aging path.
+- No changes to socket ingestion hooks, audio handlers, or Panasonic ramp-up behavior.
+
+Implementation matrix
+1) Dynamic tractor-paper width
+- Added function: `compute_dynamic_paper_width(lines, min_width=40, max_width=72, hard_stream_limit=80)`
+- Locked per-job width assignment:
+  - `paper_width = compute_dynamic_paper_width(...)`
+  - `state.active_paper_width = paper_width`
+- Applied locked width to:
+  - `print_tractor_paper_header(...)`
+  - `expand_lines_for_fit_mode(..., width=paper_width)`
+  - per-line print loop cutoffs and row padding
+  - jam alert row formatting
+  - perforation rows and stack-wrap header redraw
+
+2) Ribbon decay model
+- Added function: `ribbon_decay_curve(health)`
+  - `smooth = (1 - health)^3.4`
+  - `collapse = ((0.09 - health)/0.09)^2.1` when `health < 0.09`, else `0.0`
+- Replaced 50% breakpoint logic in `age_character(...)` with:
+  - `extra_dropout = (0.02 * smooth) + (0.65 * collapse)`
+  - `extra_faint   = (0.04 * smooth) + (0.22 * collapse)`
+  - `ghost_chance  = (0.02 * smooth) + (0.30 * collapse)`
+
+Validation snapshots
+- `py_compile` on SIM B0.0.1: PASS
+- Width lock probe:
+  - Input max stream line length = 90 chars
+  - Computed active width = 72 (capped, borders preserved)
+- Decay curve sample:
+  - h=1.00 smooth=0.00000 collapse=0.00000
+  - h=0.50 smooth=0.09473 collapse=0.00000
+  - h=0.10 smooth=0.69892 collapse=0.00000
+  - h=0.05 smooth=0.83996 collapse=0.18214
+  - h=0.01 smooth=0.96641 collapse=0.78087
+- Character retention probe (trend check):
+  - keep@0.75 = 0.900
+  - keep@0.50 = 0.880
+  - keep@0.25 = 0.870
+  - keep@0.08 = 0.847
+  - keep@0.03 = 0.327
+  - keep@0.01 = 0.000
+
+Conclusion
+- Beta objective met: width locks dynamically per stream while preserving fixed hard borders.
+- Ribbon degradation now decays rationally and ramps into heavy corruption only near lowest health.
+
+Hotfix #1 Addendum
+- Added hard 0% ribbon rule: all printed characters become blank spaces at zero ribbon health.
+- Added ribbon depletion pause gate using jam-style command flow and on-screen alert.
+- Added persisted depleted-state flag to settings roundtrip (`ribbon_depleted_active`).
+- Added main-menu intake freeze while depleted: network jobs are not consumed/launched until replacement.
+- Image routing hardening:
+  - image ASCII generator now preserves full multi-line matrix rows.
+  - added `process_image_to_ascii(...)` alias.
+- Socket ingestion block read reduced to `4096` bytes per read for controlled binary payload assembly.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix1_25TEST.txt` (25/25 pass).
+
+Hotfix #2 Addendum
+- Enforced strict no-degradation floor above collapse threshold:
+  - For ribbon health `>= 0.09`, text render path now returns original characters with zero degradation transforms.
+- Preserved hard blank rule at absolute depletion:
+  - For ribbon health `<= 0.0`, output remains complete space-only dropout.
+- Replace-ribbon now performs full visual interrupt cleanup to pristine state:
+  - clears depleted/command alert state and resets immediate output behavior.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix2_25TEST.txt` (25/25 pass).
+
+Hotfix #3 Addendum
+- Closed remaining phantom-space path above threshold:
+  - Render-loop jitter insertion now explicitly requires `ribbon_health < 0.09`.
+- Effect:
+  - No accidental jitter spaces at `>= 9%` ribbon health.
+  - Jitter remains available only in the collapse zone (`< 9%`).
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix3_25TEST.txt` (25/25 pass).
+
+Hotfix #4 Addendum
+- Worker post-job behavior updated to persistent display mode:
+  - completed print output remains visible indefinitely.
+  - close action now requires explicit manual `Q` in worker window.
+- Removed timed auto-close/auto-return behavior from worker completion path.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix4_25TEST.txt` (25/25 pass).
+
+Hotfix #5 Addendum
+- Amplified under-threshold font-weight fade severity in `age_character(...)` only.
+- Added pronounced low-health thinning behavior at 4% and below for visibly dried-ribbon output.
+- Kept fixed-width rendering path stable (single-char substitutions; no added alignment gaps/jitter rules).
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix5_25TEST.txt` (25/25 pass).
+
+Hotfix #6 Addendum
+- Reduced paper-feed line chunk gain only in `play_once(name=\"paper\")` variant generation path.
+- Quiet profile attenuation now much stronger than loud profile for line-feed events.
+- No modifications applied to strike-head pitch variation, strike timing, or profile timing loops.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix6_25TEST.txt` (25/25 pass).
+
+Hotfix #6B Addendum
+- Further reduced line-feed loud profile gain only (`0.10 -> 0.07`).
+- Quiet profile line-feed gain unchanged (`0.04`).
+- No modifications to pin-strike timing/pitch logic.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix6b_25TEST.txt` (25/25 pass).
+
+Hotfix #7 Addendum
+- Softened pin-strike tone by lowering strike playback pitch band and gain window.
+- Applied same tone-softening to non-pygame fallback strike playback path.
+- Line-feed tuning from Hotfix 6/6B left unchanged.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix7_25TEST.txt` (25/25 pass).
+
+Hotfix #7B Addendum
+- Further softened pin-strike by tightening to lower pitch/speed bands and reducing gain.
+- Applied deeper quiet-profile attenuation and lower fallback strike speed range.
+- Line-feed fixes from Hotfix 6B were left untouched.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix7b_25TEST.txt` (25/25 pass).
+
+Hotfix #8 Addendum
+- Increased pin-strike baseline playback loudness by exactly 20% (`volume *= 1.20`).
+- Preserved Hotfix 7B pitch-capping/muffling behavior.
+- Line-feed tuning from Hotfix 6B left unchanged.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix8_25TEST.txt` (25/25 pass).
+
+Hotfix #9 Addendum
+- Reduced line-feed gain by exactly 55% from Hotfix 6B values:
+  - LOUD `0.07 -> 0.0315`
+  - QUIET `0.04 -> 0.018`
+- Kept Hotfix 8 pin-strike loudness boost and Hotfix 7B pitch cap/muffling unchanged.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix9_25TEST.txt` (25/25 pass).
+
+Hotfix #9B Addendum
+- Further lowered tractor single-line feed gain to push feed noise deeper into background:
+  - LOUD `0.012`
+  - QUIET `0.006`
+- Kept Hotfix 7B and 8 pin-strike behavior unchanged.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix9b_25TEST.txt` (25/25 pass).
+
+Hotfix #9C Addendum
+- Fixed feed-volume attenuation for 8-bit PCM linefeed sources (previously only 16-bit attenuation path was active).
+- Set line-feed gain to very low floor:
+  - LOUD `0.004`
+  - QUIET `0.002`
+- Kept pin-strike and line-feed-structure behavior otherwise unchanged.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix9c_25TEST.txt` (25/25 pass).
+
+Ordering Note
+- Hotfix #7/#7B and Hotfix #8 were patched and validated before the subsequent line-feed noise correction chain (Hotfix #9/#9B/#9C).
+
+Hotfix #10 Addendum
+- Added NLQ hardware contingency double-strike render behavior.
+- NLQ mode now maps non-space glyphs to dense `#` overstrike output for heavier near-letter-quality appearance.
+- Fixed-width text stability preserved (single-column-for-single-column replacement).
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix10_25TEST.txt` (25/25 pass).
+
+Hotfix #11 Addendum
+- Stabilized high-speed strike audio by moving from one print channel to a small dedicated print-channel pool.
+- Added non-blocking idle-channel scheduling (round-robin) to prevent self-cutoff and tail truncation under throughput spikes.
+- Saturation behavior now deterministic: skip new strike tick when all print channels are busy, rather than overlapping fallback playback.
+- Preserved existing strike gain/muffle curves and NLQ behavior.
+- Regression verification completed separately:
+  - See `DEBUG_LOG_simb0.0.1_hotfix11_25TEST.txt` (25/25 pass).
+
+Hotfix #13 Addendum (Structural Refactor)
+- Added structured generated-asset library under `extra/assets/<printer>/<state>/`.
+- Added startup preload registry keyed by `[printer_type][state][pitch_index]`.
+- Added explicit pygame channel router segregation:
+  - loop channels: `0-1`
+  - strike pool: `2-7` (round-robin)
+- Performed file-path initialization verification:
+  - compile/load OK
+  - asset directories present
+  - registry key mappings resolve to expected generated variant paths
+  - channel counts verified when pygame is available.
+
+Hotfix History Consolidation Note (Requested)
+- Included coverage confirmation for `b0.0.1` hotfixes `#1` through `#6`:
+  - routing stability, degradation threshold enforcement, phantom-jitter removal,
+    manual-close persistence, low-ribbon fade intensity update, and line-feed gain trim.
+- Included coverage confirmation for `b0.0.15` full hotfix chain:
+  - `b0.0.15`, `b0.0.15_hotfix1`, and `b0.0.15_hotfix2`.
+  - Key areas: strike truncation behavior restoration, PAN24 prewarm/load mitigation,
+    IBM9 NLQ double-pass behavior, text-render correction, IBM9-specific wear tuning.
+
+b0.0.15 Input Isolation Addendum
+- Targeted fix applied to stop keyboard shortcut leakage into printer windows.
+- `drain_keyboard(...)` now supports `menu_window` gating:
+  - `menu_window=True`: full menu shortcuts active (main menu window).
+  - `menu_window=False`: all shortcut/config keys ignored; only `Q` cancel handled.
+- Updated all worker/print-loop keyboard polling call sites to use `menu_window=False`.
+- Safety scope preserved:
+  - IBM9 NLQ double-pass logic unchanged.
+  - Ribbon decay multipliers unchanged.
+  - PAN24 prewarm/asset cache structure unchanged.
+- Validation:
+  - compile check passed (`py_compile`).
+
+b0.0.16 Addendum - IBM9 Cold-Start Warmup Timing
+- Added IBM9-only cold-start timing state (`_ibm9_cold_ticks_remaining`) to intentionally emulate startup roughness.
+- Cold phase behavior:
+  - increased startup timing jitter,
+  - occasional transient tick skip,
+  - longer pre-strike delay band before steady-state timing.
+- Warmup completion:
+  - counter decays on early ticks and naturally transitions to normal smooth timing.
+- Head-switch behavior:
+  - switching back to IBM9 resets warmup counter;
+  - PAN24 path remains unaffected by cold-start behavior.
+- Safety scope:
+  - prewarm asset/cache architecture left intact,
+  - NLQ double-pass path unchanged,
+  - ribbon wear math unchanged.
+- Validation:
+  - compile check passed,
+  - quick sanity check confirmed counter decay and IBM9 reset-on-switch.
+
+b0.0.16 Addendum - DRAFT-Only Cold-Start Constraint
+- Applied targeted mode gate so accidental-load warmup emulation runs only on IBM9 in DRAFT mode.
+- Behavioral matrix after patch:
+  - IBM9 + DRAFT: warmup counter initialized/reset to `28`; startup jitter/stutter phase active.
+  - IBM9 + NLQ: warmup counter initialized/reset to `0`; no cold-load startup phase.
+  - PAN24 (all modes): warmup counter remains `0`; no cold-load startup phase.
+- Safety scope preserved:
+  - NLQ double-pass rendering/timing path unchanged.
+  - ribbon wear math unchanged.
+  - prewarm registry/channel architecture unchanged.
+- Backup and contingencies:
+  - pre-edit backup written to `old/dot_matrix_printer_network_simb0.0.16_pre_draft_coldstart_tune.py`.
+  - compile passed.
+  - focused runtime contingencies passed for mode/head gating and counter reset behavior.
+
+b0.0.165 Addendum - Exponential Multi-Profile Warmup
+- Replaced mode/head-gated cold-start counter logic with line-based warmup envelope for all printhead profiles and both modes.
+- Warmup model:
+  - active for first ~12 lines of a new print window,
+  - exponential acceleration curve from slow/jittery to steady-state timing,
+  - includes early-line occasional transient skip plus longer pre-strike delay band.
+- Target behavior:
+  - obvious cold printhead startup in first lines,
+  - visibly smoother output cadence by lines ~10-12.
+- Scope:
+  - only cold-start timing logic was modified.
+- Backup/contingencies:
+  - pre-edit backup: `old/dot_matrix_printer_network_simb0.0.16_pre_b0.0.165_backup.py`.
+  - compile passed.
+  - focused runtime checks passed for IBM9/PAN24 and DRAFT/NLQ warmup trend.
+
+b0.0.165 Addendum - Warmup Window Randomization + Jam UX
+- Warmup window control updated:
+  - hard start at line `1`,
+  - randomized warmup end per print window in range `12..17`.
+- Warmup artifact taper:
+  - reduced pause/stutter probability/amplitude beginning at line `6`,
+  - progressive taper until warmup end.
+- Paper jam tuning:
+  - `JAM_CHANCE_PER_BLOCK` raised from `0.01` to `0.05`.
+  - jam alert and status messaging now explicitly instruct menu-window clear path:
+    - `: --clear-jam` + Enter.
+- Safety scope:
+  - no changes to NLQ double-pass core behavior, ribbon wear math, or socket/data path.
+- Validation:
+  - compile checks passed.
+  - full 25-point harness run was started but manually interrupted before completion.

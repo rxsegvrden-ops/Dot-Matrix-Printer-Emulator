@@ -1,0 +1,55 @@
+Dot Matrix Emulator SIM B0.0.1 Hotfix #7b - 25-Test Heavy Debug Session
+Generated: 2026-05-19T16:02:14
+Target: L:\DOTMATRIXPRINTEMULATOR\current_working_build\dot_matrix_printer_network_simb0.0.1.py
+
+Summary: 25/25 passed, 0 failed
+[PASS] 01 01 py_compile (0.000s)
+  ok
+[PASS] 02 02 text detector printable (0.000s)
+  ok
+[PASS] 03 03 text detector binary (0.000s)
+  ok
+[PASS] 04 04 classify text (0.000s)
+  ok
+[PASS] 05 05 classify empty (0.000s)
+  ok
+[PASS] 06 06 classify png (0.041s)
+  ok
+[PASS] 07 07 classify jpeg (0.000s)
+  ok
+[PASS] 08 08 classify binary fallback (0.000s)
+  ok
+[PASS] 09 09 page count at 65 (0.000s)
+  (0, None, 'ok')
+[PASS] 10 10 page count rollover 66 (0.000s)
+  (1, None, 'ok')
+[PASS] 11 11 page count 67 (0.000s)
+  (1, None, 'ok')
+[PASS] 12 12 settings roundtrip (0.003s)
+  (None, None, None, None, 'ok')
+[PASS] 13 13 replace ribbon (0.000s)
+  (None, None, None, None, None, None, None, 'ok')
+[PASS] 14 14 ribbon wear (0.000s)
+  (None, None, None, 'ok')
+[PASS] 15 15 queue metrics (0.000s)
+  (None, None, None, None, 'ok')
+[PASS] 16 16 spool trim (0.041s)
+  (['C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0001_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0002_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0003_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0004_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0005_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0006_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0007_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0008_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0009_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0010_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0011_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0012_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0013_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0014_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0015_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0016_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0017_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0018_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0019_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0020_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0021_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0022_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0023_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0024_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0025_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0026_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0027_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0028_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0029_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0030_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0031_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0032_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0033_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0034_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0035_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0036_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0037_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0038_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0039_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0040_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0041_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0042_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0043_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0044_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0045_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0046_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0047_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0048_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0049_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0050_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0051_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0052_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0053_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0054_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0055_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0056_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0057_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0058_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0059_20260519_160213_src.txt', 'C:\\Users\\Rose\\AppData\\Local\\Temp\\tmpjx9o0bqp\\job_0060_20260519_160213_src.txt'], None, 'ok')
+[PASS] 17 17 receive_all text kind (0.000s)
+  ok
+[PASS] 18 18 receive_all image kind (0.000s)
+  ok
+[PASS] 19 19 receive_all cap (0.001s)
+  ok
+[PASS] 20 20 line settle positive (0.000s)
+  ok
+[PASS] 21 21 worker width stable (0.000s)
+  ok
+[PASS] 22 22 theme cycle (0.000s)
+  ok
+[PASS] 23 23 head cycle (0.000s)
+  ok
+[PASS] 24 24 payload huge text (0.000s)
+  ok
+[PASS] 25 25 receiver mini soak (1.009s)
+  sent=40, queued=40

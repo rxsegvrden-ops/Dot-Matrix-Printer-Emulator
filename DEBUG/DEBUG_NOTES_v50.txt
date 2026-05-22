@@ -1,0 +1,100 @@
+DOT MATRIX EMULATOR - V50 DEBUG/PATCH NOTES
+Date: 2026-05-19
+Target build: L:\DOTMATRXEMU\current_working_build\dot_matrix_printer_network_simv50.py
+
+Version promotion
+- Promoted v49 -> v50 as requested.
+- Archived previous active build to:
+  L:\DOTMATRXEMU\old\dot_matrix_printer_network_simv49.py
+
+Scope for this debug cycle
+- Debugging artifacts are centralized in:
+  L:\DOTMATRXEMU\current_working_build\DEBUG
+- Added a separate standalone debug program (external harness) instead of relying only on internal self-test.
+
+New debug tooling
+1) Standalone harness script
+   File:
+   - L:\DOTMATRXEMU\current_working_build\DEBUG\dot_matrix_debug_harness_v50.py
+
+   Purpose:
+   - Imports v50 directly.
+   - Runs a comprehensive automated test suite outside the main app runtime loop.
+   - Writes a full timestamped report to:
+     L:\DOTMATRXEMU\current_working_build\DEBUG\debug_report_v50.txt
+
+2) Detailed machine-readable + human-readable report
+   File:
+   - L:\DOTMATRXEMU\current_working_build\DEBUG\debug_report_v50.txt
+
+   Includes:
+   - pass/fail summary
+   - per-test timing
+   - detailed assertions
+   - raw JSON result payload for future diffing
+
+Executed v50 debug suite (external harness)
+- Total: 11 tests
+- Passed: 11
+- Failed: 0
+
+Test list and outcomes
+1. Compile/syntax
+   - Result: PASS
+   - Detail: py_compile OK
+
+2. Settings roundtrip
+   - Result: PASS
+   - Detail: persisted/restored mode, sound flags, speed, feed/theme/fit, paused
+
+3. Ribbon precision persistence
+   - Result: PASS
+   - Detail: chars=137, health=0.98858333
+
+4. Replace-ribbon command path
+   - Result: PASS
+   - Detail: command reset persisted (chars=0, health=1.0)
+
+5. Page/stack invariant at 65 lines
+   - Result: PASS
+   - Detail: page=1, line=65, stack=0
+
+6. Page/stack rollover at 66 lines
+   - Result: PASS
+   - Detail: page=2, line=0, stack=1
+
+7. Form-feed boundary behavior
+   - Result: PASS
+   - Detail: page=2, line=2, stack=1
+
+8. Worker close writes settings
+   - Result: PASS
+   - Detail: settings mtime advanced; ribbon state persisted after worker run
+
+9. Receiver bounded newest-window behavior
+   - Result: PASS
+   - Detail: queue preserved newest window under burst (len=20, min=100, max=119)
+
+10. Incoming payload cap enforcement
+    - Result: PASS
+    - Detail: receive_all capped payload at 2,097,152 bytes
+
+11. Spool trim bounded behavior
+    - Result: PASS
+    - Detail: spool file count bounded at <= 50
+
+Known runtime observation during debug runs
+- Console sizing warning may appear on some hosts:
+  "The screen cannot be set to the number of lines and columns specified."
+  This is environment/console-host dependent and did not break test outcomes.
+
+Operational instructions
+- Run full debug suite:
+  python L:\DOTMATRXEMU\current_working_build\DEBUG\dot_matrix_debug_harness_v50.py
+
+- Read latest report:
+  L:\DOTMATRXEMU\current_working_build\DEBUG\debug_report_v50.txt
+
+Notes
+- This debug package intentionally keeps diagnostics external so test evolution can continue
+  without changing core runtime paths each time.

@@ -1,0 +1,218 @@
+Dot Matrix Emulator vfinal (from v54) - 25-Test Heavy Debug Session
+Date: 2026-05-19T10:46:41
+Target: L:\DOTMATRIXPRINTEMULATOR\current_working_build\dot_matrix_printer_network_simvfinal.py
+
+Summary: 25/25 passed, 0 failed
+
+[PASS] 01 py_compile (0.028s)
+  compile OK
+[PASS] 02 constants (0.000s)
+  constants OK
+[PASS] 03 mode delay scaling (0.000s)
+  (None, (0.01125, 0.035), None, 'delay scaling monotonic')
+[PASS] 04 settings roundtrip full (0.004s)
+  settings roundtrip OK
+[PASS] 05 live sync mtime gate (0.002s)
+  mtime gate stable
+[PASS] 06 partial settings preserve ribbon (0.002s)
+  partial read preserves ribbon
+[PASS] 07 ribbon wear monotonic (0.000s)
+  chars=250,health=0.97916667
+[PASS] 08 replace_ribbon fn (0.000s)
+  replace function OK
+[PASS] 09 replace_ribbon cmd (0.000s)
+  command reset OK
+[PASS] 10 unknown command handling (0.000s)
+  Unknown command: --nope
+[PASS] 11 jam clear command (0.000s)
+  jam clear OK
+[PASS] 12 page counter boundaries (0.000s)
+  page boundaries OK
+[PASS] 13 form-feed stack increment (0.000s)
+  form-feed stack increment OK
+[PASS] 14 manual feed boundary (0.472s)
+  manual feed boundary OK
+[PASS] 15 ribbon degradation profile (0.007s)
+  hi@75=0.1143, lo@25=0.7457
+[PASS] 16 dashboard CMD/I layout (0.000s)
+  CMD row and I key visible
+[PASS] 17 spool trim cap (0.127s)
+  files=50
+[PASS] 18 load spool history (0.002s)
+  entries=2
+[PASS] 19 receive_all cap (0.001s)
+  bytes=2097152
+[PASS] 20 receiver burst newest window (1.395s)
+  len=20,min=100,max=119
+[PASS] 21 receiver concurrent stress (7.161s)
+  queued=64,err=0
+[PASS] 22 worker close writes settings (3.269s)
+  mtime delta=0.765360, chars=9
+[PASS] 23 print smoke small (0.367s)
+  status=COMPLETE, chars=10
+[PASS] 24 cli parse (0.000s)
+  cli parse OK
+[PASS] 25 receiver mini soak (4.802s)
+  sent=1338,got=256,err=0
+
+Compact JSON:
+[
+  {
+    "name": "01 py_compile",
+    "pass": true,
+    "detail": "compile OK",
+    "elapsed_s": 0.028
+  },
+  {
+    "name": "02 constants",
+    "pass": true,
+    "detail": "constants OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "03 mode delay scaling",
+    "pass": true,
+    "detail": [
+      null,
+      [
+        0.01125,
+        0.035
+      ],
+      null,
+      "delay scaling monotonic"
+    ],
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "04 settings roundtrip full",
+    "pass": true,
+    "detail": "settings roundtrip OK",
+    "elapsed_s": 0.004
+  },
+  {
+    "name": "05 live sync mtime gate",
+    "pass": true,
+    "detail": "mtime gate stable",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "06 partial settings preserve ribbon",
+    "pass": true,
+    "detail": "partial read preserves ribbon",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "07 ribbon wear monotonic",
+    "pass": true,
+    "detail": "chars=250,health=0.97916667",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "08 replace_ribbon fn",
+    "pass": true,
+    "detail": "replace function OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "09 replace_ribbon cmd",
+    "pass": true,
+    "detail": "command reset OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "10 unknown command handling",
+    "pass": true,
+    "detail": "Unknown command: --nope",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "11 jam clear command",
+    "pass": true,
+    "detail": "jam clear OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "12 page counter boundaries",
+    "pass": true,
+    "detail": "page boundaries OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "13 form-feed stack increment",
+    "pass": true,
+    "detail": "form-feed stack increment OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "14 manual feed boundary",
+    "pass": true,
+    "detail": "manual feed boundary OK",
+    "elapsed_s": 0.472
+  },
+  {
+    "name": "15 ribbon degradation profile",
+    "pass": true,
+    "detail": "hi@75=0.1143, lo@25=0.7457",
+    "elapsed_s": 0.007
+  },
+  {
+    "name": "16 dashboard CMD/I layout",
+    "pass": true,
+    "detail": "CMD row and I key visible",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "17 spool trim cap",
+    "pass": true,
+    "detail": "files=50",
+    "elapsed_s": 0.127
+  },
+  {
+    "name": "18 load spool history",
+    "pass": true,
+    "detail": "entries=2",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "19 receive_all cap",
+    "pass": true,
+    "detail": "bytes=2097152",
+    "elapsed_s": 0.001
+  },
+  {
+    "name": "20 receiver burst newest window",
+    "pass": true,
+    "detail": "len=20,min=100,max=119",
+    "elapsed_s": 1.395
+  },
+  {
+    "name": "21 receiver concurrent stress",
+    "pass": true,
+    "detail": "queued=64,err=0",
+    "elapsed_s": 7.161
+  },
+  {
+    "name": "22 worker close writes settings",
+    "pass": true,
+    "detail": "mtime delta=0.765360, chars=9",
+    "elapsed_s": 3.269
+  },
+  {
+    "name": "23 print smoke small",
+    "pass": true,
+    "detail": "status=COMPLETE, chars=10",
+    "elapsed_s": 0.367
+  },
+  {
+    "name": "24 cli parse",
+    "pass": true,
+    "detail": "cli parse OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "25 receiver mini soak",
+    "pass": true,
+    "detail": "sent=1338,got=256,err=0",
+    "elapsed_s": 4.802
+  }
+]

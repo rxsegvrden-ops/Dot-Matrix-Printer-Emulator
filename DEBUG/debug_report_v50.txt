@@ -1,0 +1,98 @@
+Dot Matrix Emulator Debug Report - v50
+Generated: 2026-05-19T09:48:28
+Target: L:\DOTMATRXEMU\current_working_build\dot_matrix_printer_network_simv50.py
+
+Summary: 11/11 tests passed
+
+[PASS] Compile/syntax (0.029s)
+  Detail: py_compile OK
+[PASS] Settings roundtrip (0.008s)
+  Detail: settings fields persisted and restored
+[PASS] Ribbon precision persistence (0.002s)
+  Detail: chars=137, health=0.98858333
+[PASS] Replace-ribbon command path (0.002s)
+  Detail: command reset persisted (chars=0, health=1.0)
+[PASS] Page/stack 65-line invariant (9.562s)
+  Detail: page=1, line=65, stack=0
+[PASS] Page/stack 66-line rollover (9.474s)
+  Detail: page=2, line=0, stack=1
+[PASS] Form-feed boundary (0.533s)
+  Detail: page=2, line=2, stack=1
+[PASS] Worker close writes settings (3.195s)
+  Detail: mtime 1779198503.532739 -> 1779198504.2251422, ribbon chars=9
+[PASS] Receiver bounded newest-window (1.446s)
+  Detail: len=20, min=100, max=119
+[PASS] Incoming payload cap (0.002s)
+  Detail: bytes=2097152 (cap=2097152)
+[PASS] Spool trim bounded (0.132s)
+  Detail: files=50 (max=50)
+
+Raw JSON:
+[
+  {
+    "name": "Compile/syntax",
+    "pass": true,
+    "detail": "py_compile OK",
+    "elapsed_s": 0.029
+  },
+  {
+    "name": "Settings roundtrip",
+    "pass": true,
+    "detail": "settings fields persisted and restored",
+    "elapsed_s": 0.008
+  },
+  {
+    "name": "Ribbon precision persistence",
+    "pass": true,
+    "detail": "chars=137, health=0.98858333",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "Replace-ribbon command path",
+    "pass": true,
+    "detail": "command reset persisted (chars=0, health=1.0)",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "Page/stack 65-line invariant",
+    "pass": true,
+    "detail": "page=1, line=65, stack=0",
+    "elapsed_s": 9.562
+  },
+  {
+    "name": "Page/stack 66-line rollover",
+    "pass": true,
+    "detail": "page=2, line=0, stack=1",
+    "elapsed_s": 9.474
+  },
+  {
+    "name": "Form-feed boundary",
+    "pass": true,
+    "detail": "page=2, line=2, stack=1",
+    "elapsed_s": 0.533
+  },
+  {
+    "name": "Worker close writes settings",
+    "pass": true,
+    "detail": "mtime 1779198503.532739 -> 1779198504.2251422, ribbon chars=9",
+    "elapsed_s": 3.195
+  },
+  {
+    "name": "Receiver bounded newest-window",
+    "pass": true,
+    "detail": "len=20, min=100, max=119",
+    "elapsed_s": 1.446
+  },
+  {
+    "name": "Incoming payload cap",
+    "pass": true,
+    "detail": "bytes=2097152 (cap=2097152)",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "Spool trim bounded",
+    "pass": true,
+    "detail": "files=50 (max=50)",
+    "elapsed_s": 0.132
+  }
+]

@@ -1,0 +1,57 @@
+Dot Matrix Emulator v54 - Heavy Debug Session (rerun)
+Date: 2026-05-19T10:40:03
+
+Summary: 6/6 passed, 0 failed
+
+[PASS] ribbon degradation curve (0.009s)
+  hi@75=0.1146, lo@25=0.7520
+[PASS] constants (0.000s)
+  constants OK
+[PASS] dashboard command layout (0.000s)
+  layout OK
+[PASS] page boundary (0.000s)
+  boundary OK
+[PASS] receiver burst (1.442s)
+  got=20, errs=0
+[PASS] worker close writes (3.264s)
+  delta=0.759775, chars=9
+
+Compact JSON:
+[
+  {
+    "name": "ribbon degradation curve",
+    "pass": true,
+    "detail": "hi@75=0.1146, lo@25=0.7520",
+    "elapsed_s": 0.009
+  },
+  {
+    "name": "constants",
+    "pass": true,
+    "detail": "constants OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "dashboard command layout",
+    "pass": true,
+    "detail": "layout OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "page boundary",
+    "pass": true,
+    "detail": "boundary OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "receiver burst",
+    "pass": true,
+    "detail": "got=20, errs=0",
+    "elapsed_s": 1.442
+  },
+  {
+    "name": "worker close writes",
+    "pass": true,
+    "detail": "delta=0.759775, chars=9",
+    "elapsed_s": 3.264
+  }
+]

@@ -1,0 +1,29 @@
+Dot Matrix Emulator v52 - Debug Session Summary
+Date: 2026-05-19
+
+Scope
+- Modified only line-feed (paper) volume path.
+- No other functional areas changed.
+
+Line-feed volume change
+- quiet-feed path now uses generated variant gain:
+  - LOUD: 0.32
+  - QUIET: 0.24
+- fallback paper-feed path uses same gains.
+
+Validation
+1) py_compile: PASS
+2) built-in --self-test: PASS
+3) Heavy barrage: 14/14 PASS
+   - 65-line page/stack invariant: PASS
+   - 66-line rollover: PASS
+   - replace-ribbon persistence: PASS
+   - worker-close settings write: PASS
+   - receiver burst bounded-window: PASS
+   - receiver concurrent stress: PASS
+   - payload cap enforcement: PASS
+   - spool cap enforcement: PASS
+   - mini soak ingestion stress: PASS
+
+Notes
+- Console host warning "The screen cannot be set..." appeared in subprocess output; non-fatal and unrelated to logic.

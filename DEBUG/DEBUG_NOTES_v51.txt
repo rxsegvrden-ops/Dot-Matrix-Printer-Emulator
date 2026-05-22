@@ -1,0 +1,29 @@
+DOT MATRIX EMULATOR - V51 DEBUG CHANGE NOTES
+Date: 2026-05-19
+Active build:
+- L:\DOTMATRXEMU\current_working_build\dot_matrix_printer_network_simv51.py
+
+What changed in v51 (minimal deletion approach)
+- Removed only the automatic startup internal self-test hook from main startup flow.
+  - Main menu no longer runs preflight self-test at launch.
+  - Startup message now indicates checks are deferred to external harness.
+- Kept all core emulator behavior unchanged.
+- Kept optional CLI self-test path intact.
+
+Why this was removed
+- It duplicated external debug coverage and ran every startup.
+- External harness now handles comprehensive debugging independently.
+
+External debug tooling for v51
+- Harness:
+  L:\DOTMATRXEMU\current_working_build\DEBUG\dot_matrix_debug_harness_v51.py
+- Report output:
+  L:\DOTMATRXEMU\current_working_build\DEBUG\debug_report_v51.txt
+
+Validation run
+- Harness executed against v51.
+- Result: 11/11 tests passed.
+
+Notes
+- This update intentionally avoids broad cleanup/deletion.
+- Goal was strict debugging-focused reduction of redundant internal checks.

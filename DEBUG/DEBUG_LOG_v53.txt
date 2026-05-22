@@ -1,0 +1,210 @@
+Dot Matrix Emulator v53 - Heavy Debug Session
+Date: 2026-05-19T10:27:15
+Target: L:\DOTMATRXEMU\current_working_build\dot_matrix_printer_network_simv53.py
+
+Summary: 25/25 passed, 0 failed
+
+[PASS] constants (0.000s)
+  core constants OK
+[PASS] mode delay scaling (0.000s)
+  delay scaling monotonic
+[PASS] settings full roundtrip (0.009s)
+  full roundtrip OK
+[PASS] live sync mtime gate (0.002s)
+  mtime gate stable
+[PASS] partial settings preserves ribbon (0.002s)
+  partial file no ribbon bounce
+[PASS] ribbon wear monotonic (0.000s)
+  chars=200, health=0.98333333
+[PASS] replace_ribbon function (0.000s)
+  replace_ribbon reset OK
+[PASS] replace-ribbon command (0.000s)
+  command path reset OK
+[PASS] unknown command handling (0.000s)
+  Unknown command: --nope
+[PASS] jam command clear (0.000s)
+  jam clear command OK
+[PASS] page counter boundaries (0.000s)
+  boundary math OK
+[PASS] form-feed stack increment (0.000s)
+  form-feed boundary increments stack
+[PASS] manual feed boundary (0.473s)
+  manual feed boundary behavior OK
+[PASS] spool trim cap (0.145s)
+  files=50
+[PASS] load spool history (0.002s)
+  history_entries=2
+[PASS] receive_all cap (0.001s)
+  bytes=2097152
+[PASS] receiver burst newest window (1.673s)
+  len=20,min=100,max=119
+[PASS] receiver concurrent stress (7.381s)
+  queued=64,send_err=0
+[PASS] worker close writes settings (3.269s)
+  mtime delta=0.765813, ribbon_chars=9
+[PASS] print smoke small (0.360s)
+  status=COMPLETE, chars=10
+[PASS] audio feed path no-throw (0.000s)
+  paper path no-throw (sound disabled)
+[PASS] cli parse (0.000s)
+  cli parse OK
+[PASS] queue metrics/history cursor (0.000s)
+  history_cursor=0
+[PASS] receiver mini soak (4.810s)
+  sent=977,got=256,err=0
+[PASS] settings include ribbon fields (0.002s)
+  ribbon fields present
+
+Compact JSON:
+[
+  {
+    "name": "constants",
+    "pass": true,
+    "detail": "core constants OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "mode delay scaling",
+    "pass": true,
+    "detail": "delay scaling monotonic",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "settings full roundtrip",
+    "pass": true,
+    "detail": "full roundtrip OK",
+    "elapsed_s": 0.009
+  },
+  {
+    "name": "live sync mtime gate",
+    "pass": true,
+    "detail": "mtime gate stable",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "partial settings preserves ribbon",
+    "pass": true,
+    "detail": "partial file no ribbon bounce",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "ribbon wear monotonic",
+    "pass": true,
+    "detail": "chars=200, health=0.98333333",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "replace_ribbon function",
+    "pass": true,
+    "detail": "replace_ribbon reset OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "replace-ribbon command",
+    "pass": true,
+    "detail": "command path reset OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "unknown command handling",
+    "pass": true,
+    "detail": "Unknown command: --nope",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "jam command clear",
+    "pass": true,
+    "detail": "jam clear command OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "page counter boundaries",
+    "pass": true,
+    "detail": "boundary math OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "form-feed stack increment",
+    "pass": true,
+    "detail": "form-feed boundary increments stack",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "manual feed boundary",
+    "pass": true,
+    "detail": "manual feed boundary behavior OK",
+    "elapsed_s": 0.473
+  },
+  {
+    "name": "spool trim cap",
+    "pass": true,
+    "detail": "files=50",
+    "elapsed_s": 0.145
+  },
+  {
+    "name": "load spool history",
+    "pass": true,
+    "detail": "history_entries=2",
+    "elapsed_s": 0.002
+  },
+  {
+    "name": "receive_all cap",
+    "pass": true,
+    "detail": "bytes=2097152",
+    "elapsed_s": 0.001
+  },
+  {
+    "name": "receiver burst newest window",
+    "pass": true,
+    "detail": "len=20,min=100,max=119",
+    "elapsed_s": 1.673
+  },
+  {
+    "name": "receiver concurrent stress",
+    "pass": true,
+    "detail": "queued=64,send_err=0",
+    "elapsed_s": 7.381
+  },
+  {
+    "name": "worker close writes settings",
+    "pass": true,
+    "detail": "mtime delta=0.765813, ribbon_chars=9",
+    "elapsed_s": 3.269
+  },
+  {
+    "name": "print smoke small",
+    "pass": true,
+    "detail": "status=COMPLETE, chars=10",
+    "elapsed_s": 0.36
+  },
+  {
+    "name": "audio feed path no-throw",
+    "pass": true,
+    "detail": "paper path no-throw (sound disabled)",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "cli parse",
+    "pass": true,
+    "detail": "cli parse OK",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "queue metrics/history cursor",
+    "pass": true,
+    "detail": "history_cursor=0",
+    "elapsed_s": 0.0
+  },
+  {
+    "name": "receiver mini soak",
+    "pass": true,
+    "detail": "sent=977,got=256,err=0",
+    "elapsed_s": 4.81
+  },
+  {
+    "name": "settings include ribbon fields",
+    "pass": true,
+    "detail": "ribbon fields present",
+    "elapsed_s": 0.002
+  }
+]

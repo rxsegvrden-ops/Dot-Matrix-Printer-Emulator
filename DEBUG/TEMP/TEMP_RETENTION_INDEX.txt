@@ -1,0 +1,13 @@
+DEBUG TEMP RETENTION INDEX
+Generated: 2026-05-19
+Policy: Max temp lifetime is 30 days.
+Default expiration window used here: 30 days.
+
+File: debug_session_v52_2026-05-19.txt
+Created: 2026-05-19
+Expires: 2026-06-18
+Reason: session-level debug summary artifact; not required by harness runtime.
+
+Notes:
+- Do not move files that are hard-referenced by harness scripts/notes.
+- Keep generated harness reports in DEBUG root unless policy changes.
