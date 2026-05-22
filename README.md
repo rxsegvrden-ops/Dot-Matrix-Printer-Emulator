@@ -23,8 +23,8 @@ I've personally debugged and cleaned up the files to make sure there's no "AI co
 
 ## Current Status
 
-- Current version: `b0.0.17`
-- Active source file: `current_working_build/dot_matrix_printer_network_simb0.0.17.py`
+- Current version: `b0.0.17hotfix3/v1.0.0`
+- Active source file: `current_working_build/dot_matrix_printer_network_simb0.0.17hotfix3.py`
 - Network listener: `0.0.0.0:9999`
 - Latest validation: `25/25` smoke test pass
 - Main platform: Windows / PowerShell
